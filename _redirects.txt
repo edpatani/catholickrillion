@@ -1,0 +1,2 @@
+/team1    /team.html?team=1    200
+/team2    /team.html?team=2    200
