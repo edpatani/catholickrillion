@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Credillion — Team Controller</title>
+  <style>
+    /* =========================================================================
+       Catholic Krillion ("Credillion") — Team Controller Styling
+       Ecclesiastical Theme: Deep Vatican Navy (#0F172A), Liturgical Gold (#C59B27),
+       Cardinal Crimson (#881337), and Parchment Accents.
+       ========================================================================= */
+
+    :root {
+      --bg-navy-950: #0A0F1D;
+      --bg-navy-900: #0F172A;
+      --bg-navy-800: #1E293B;
+      --bg-navy-700: #334155;
+      --gold-primary: #C59B27;
+      --gold-light: #E4BC4A;
+      --gold-dark: #9A7718;
+      --gold-glow: rgba(197, 155, 39, 0.45);
+      --crimson-primary: #881337;
+      --crimson-light: #BE123C;
+      --crimson-dark: #580B22;
+      --crimson-glow: rgba(190, 18, 60, 0.45);
+      --emerald-accent: #059669;
+      --emerald-glow: rgba(5, 150, 105, 0.45);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-gold: #E4BC4A;
+      --border-subtle: rgba(197, 155, 39, 0.25);
+      --card-bg: rgba(30, 41, 59, 0.88);
+      --team-accent: var(--gold-primary);
+      --team-glow: var(--gold-glow);
+    }
+
+    /* Team 2 Crimson Theme Override */
+    body.theme-team2 {
+      --team-accent: var(--crimson-light);
+      --team-glow: var(--crimson-glow);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-navy-950);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(197, 155, 39, 0.12) 0%, transparent 65%),
+        radial-gradient(circle at 100% 100%, rgba(136, 19, 55, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-navy-950) 0%, var(--bg-navy-900) 100%);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.4;
+    }
+
+    /* Top Navigation Header */
+    .header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .team-badge-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-navy-800);
+      border: 2px solid var(--team-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      box-shadow: 0 0 10px var(--team-glow);
+      flex-shrink: 0;
+    }
+
+    .team-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .team-name-title {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--team-accent);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .team-motto {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Team Switcher Pill */
+    .team-switcher {
+      display: flex;
+      background: var(--bg-navy-800);
+      border: 1px solid rgba(197, 155, 39, 0.3);
+      border-radius: 20px;
+      padding: 2px;
+      font-size: 11px;
+    }
+
+    .team-switch-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .team-switch-btn.active {
+      background: var(--team-accent);
+      color: #0F172A;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    body.theme-team2 .team-switch-btn.active {
+      color: #FFFFFF;
+    }
+
+    /* Connection Status Indicator */
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 4px 10px;
+      background: var(--bg-navy-800);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #EF4444; /* Default disconnected */
+      box-shadow: 0 0 6px #EF4444;
+      transition: all 0.3s ease;
+    }
+
+    .status-dot.connected {
+      background: #10B981;
+      box-shadow: 0 0 6px #10B981;
+    }
+
+    .status-dot.reconnecting {
+      background: #F59E0B;
+      box-shadow: 0 0 6px #F59E0B;
+      animation: pulseRecon 1s infinite alternate;
+    }
+
+    @keyframes pulseRecon {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    /* Main Container */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 760px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+      gap: 16px;
+    }
+
+    /* Phase Screen Layouts */
+    .phase-screen {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .phase-screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card Panels */
+    .panel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--team-accent), transparent);
+    }
+
+    /* Timer & Round Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(197, 155, 39, 0.2);
+      border-radius: 12px;
+      padding: 10px 16px;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-box.left {
+      align-items: flex-start;
+    }
+
+    .stat-box.right {
+      align-items: flex-end;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-gold);
+    }
+
+    body.theme-team2 .stat-value {
+      color: #FDA4AF;
+    }
+
+    .stat-value.meters {
+      color: #93C5FD;
+      font-size: 17px;
+    }
+
+    /* Center Timer Display */
+    .timer-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-navy-950);
+      border: 2px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 6px 18px;
+      box-shadow: 0 0 14px rgba(197, 155, 39, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .timer-pill.urgent {
+      border-color: #EF4444;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+      animation: pulseUrgent 0.6s infinite alternate;
+    }
+
+    @keyframes pulseUrgent {
+      from { transform: scale(1); }
+      to { transform: scale(1.04); }
+    }
+
+    .timer-text {
+      font-family: "Courier New", Courier, monospace, sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 1px;
+    }
+
+    .round-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold-light);
+      margin-top: 3px;
+    }
+
+    /* Round 2 Duc In Altum Multiplier Badge */
+    .multiplier-banner {
+      display: none;
+      background: linear-gradient(90deg, rgba(136, 19, 55, 0.8), rgba(197, 155, 39, 0.8));
+      border: 1px solid var(--gold-light);
+      border-radius: 8px;
+      padding: 8px 14px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      animation: bannerGlow 1.8s infinite alternate;
+    }
+
+    .multiplier-banner.visible {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    @keyframes bannerGlow {
+      from { box-shadow: 0 0 8px rgba(197, 155, 39, 0.4); }
+      to { box-shadow: 0 0 20px rgba(197, 155, 39, 0.85); }
+    }
+
+    /* Prompt Display Card */
+    .prompt-card {
+      text-align: center;
+      padding: 24px 20px;
+      background: radial-gradient(circle at 50% 0%, rgba(197, 155, 39, 0.14) 0%, rgba(30, 41, 59, 0.95) 75%);
+    }
+
+    .prompt-category-tag {
+      display: inline-block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      color: var(--gold-light);
+      background: rgba(197, 155, 39, 0.15);
+      border: 1px solid rgba(197, 155, 39, 0.35);
+      padding: 4px 12px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
+
+    .prompt-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .prompt-description {
+      font-size: 15px;
+      color: #CBD5E1;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* Word Input & Submission Area */
+    .input-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .input-form {
+      display: flex;
+      gap: 10px;
+      position: relative;
+    }
+
+    .word-input-container {
+      position: relative;
+      flex: 1;
+      border-radius: 12px;
+      transition: all 0.25s ease;
+    }
+
+    .word-input {
+      width: 100%;
+      height: 56px;
+      background: var(--bg-navy-800);
+      border: 2px solid var(--border-subtle);
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-size: 20px;
+      font-weight: 600;
+      padding: 0 18px;
+      outline: none;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .word-input:focus {
+      border-color: var(--team-accent);
+      box-shadow: 0 0 16px var(--team-glow), inset 0 2px 6px rgba(0, 0, 0, 0.4);
+      background: rgba(30, 41, 59, 0.95);
+    }
+
+    .word-input::placeholder {
+      color: #64748B;
+      font-size: 17px;
+      font-weight: 400;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      height: 56px;
+      padding: 0 24px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+      color: #0F172A;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(197, 155, 39, 0.4);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    body.theme-team2 .submit-btn {
+      background: linear-gradient(135deg, #F43F5E, var(--crimson-primary));
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(190, 18, 60, 0.4);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    .submit-btn:active {
+      transform: translateY(1px);
+      filter: brightness(0.95);
+    }
+
+    .submit-btn:disabled,
+    .submit-btn.submitting {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none !important;
+      filter: grayscale(0.5);
+    }
+
+    /* Dynamic Visual Feedback Overlays & Animations */
+    .word-input-container.feedback-success {
+      animation: successGlow 0.8s ease-out;
+    }
+
+    .word-input-container.feedback-shake {
+      animation: errorShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes successGlow {
+      0% {
+        box-shadow: 0 0 0px rgba(16, 185, 129, 0);
+      }
+      30% {
+        box-shadow: 0 0 28px rgba(16, 185, 129, 0.8), 0 0 10px rgba(228, 188, 74, 0.6);
+      }
+      100% {
+        box-shadow: 0 0 0px rgba(16, 185, 129, 0);
+      }
+    }
+
+    @keyframes errorShake {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(5px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+
+    /* Feedback Banner / Toast */
+    .feedback-toast {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      animation: slideDown 0.25s ease-out;
+    }
+
+    .feedback-toast.visible {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-toast.tier-pew_warmer {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid #64748B;
+      color: #E2E8F0;
+    }
+
+    .feedback-toast.tier-altar_server {
+      background: rgba(20, 83, 45, 0.92);
+      border: 1px solid #10B981;
+      color: #A7F3D0;
+    }
+
+    .feedback-toast.tier-theologian {
+      background: rgba(88, 28, 135, 0.92);
+      border: 1px solid #A855F7;
+      color: #E9D5FF;
+    }
+
+    .feedback-toast.tier-doctor_of_the_church {
+      background: rgba(136, 19, 55, 0.92);
+      border: 1px solid #F43F5E;
+      color: #FFE4E6;
+    }
+
+    .feedback-toast.tier-one_in_a_credillion {
+      background: linear-gradient(135deg, rgba(197, 155, 39, 0.95), rgba(136, 19, 55, 0.95));
+      border: 2px solid #FDE047;
+      color: #FFFFFF;
+      box-shadow: 0 0 20px rgba(253, 224, 71, 0.5);
+    }
+
+    .feedback-toast.error-duplicate {
+      background: rgba(153, 27, 27, 0.95);
+      border: 1px solid #EF4444;
+      color: #FEE2E2;
+    }
+
+    .feedback-toast.error-not_found {
+      background: rgba(120, 53, 15, 0.95);
+      border: 1px solid #F59E0B;
+      color: #FEF3C7;
+    }
+
+    .feedback-toast.error-invalid {
+      background: rgba(51, 65, 85, 0.95);
+      border: 1px solid #94A3B8;
+      color: #F1F5F9;
+    }
+
+    .feedback-content-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feedback-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .feedback-score-gain {
+      font-weight: 800;
+      font-size: 15px;
+      color: #FDE047;
+    }
+
+    /* Live Keystroke Monitor Subtitle */
+    .typing-status-hint {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .typing-sync-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--gold-light);
+    }
+
+    /* Recent Scored Words Panel */
+    .recent-words-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .panel-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .words-count-badge {
+      background: var(--bg-navy-800);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: var(--text-gold);
+      font-weight: 700;
+    }
+
+    .words-list-scroll {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .words-list-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .words-list-scroll::-webkit-scrollbar-thumb {
+      background: var(--bg-navy-700);
+      border-radius: 3px;
+    }
+
+    .scored-word-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 8px 14px;
+      animation: itemPop 0.25s ease-out;
+    }
+
+    @keyframes itemPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .scored-word-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scored-word-text {
+      font-weight: 700;
+      font-size: 15px;
+      color: #FFFFFF;
+      text-transform: capitalize;
+    }
+
+    .tier-pill {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .tier-pill.pew_warmer {
+      background: #334155;
+      color: #CBD5E1;
+      border: 1px solid #475569;
+    }
+
+    .tier-pill.altar_server {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6EE7B7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .tier-pill.theologian {
+      background: rgba(168, 85, 247, 0.2);
+      color: #D8B4FE;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .tier-pill.doctor_of_the_church {
+      background: rgba(244, 63, 94, 0.2);
+      color: #FDA4AF;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+    }
+
+    .tier-pill.one_in_a_credillion {
+      background: linear-gradient(135deg, rgba(253, 224, 71, 0.3), rgba(244, 63, 94, 0.3));
+      color: #FDE047;
+      border: 1px solid #FDE047;
+      box-shadow: 0 0 8px rgba(253, 224, 71, 0.4);
+    }
+
+    .scored-word-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .scored-word-pts {
+      color: var(--gold-light);
+    }
+
+    .scored-word-depth {
+      color: #93C5FD;
+      font-size: 11px;
+    }
+
+    .empty-words-placeholder {
+      text-align: center;
+      padding: 28px 16px;
+      color: #64748B;
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    /* Lobby Phase Screen */
+    .lobby-content {
+      text-align: center;
+      padding: 30px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .lobby-cross-icon {
+      font-size: 48px;
+      color: var(--gold-primary);
+      text-shadow: 0 0 20px var(--gold-glow);
+      animation: crossBreathe 2.4s infinite ease-in-out;
+    }
+
+    @keyframes crossBreathe {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 32px var(--gold-glow); }
+    }
+
+    .lobby-title {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+
+    .lobby-subtitle {
+      font-size: 15px;
+      color: #CBD5E1;
+      max-width: 480px;
+    }
+
+    .lobby-status-card {
+      background: var(--bg-navy-800);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .lobby-team-preview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .lobby-rules-list {
+      text-align: left;
+      font-size: 13px;
+      color: #94A3B8;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 440px;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .lobby-rules-list li {
+      margin-left: 18px;
+    }
+
+    /* Halftime Phase Screen */
+    .halftime-content {
+      text-align: center;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .halftime-title {
+      font-family: Georgia, serif;
+      font-size: 26px;
+      color: var(--gold-light);
+    }
+
+    .halftime-timer-box {
+      font-size: 32px;
+      font-weight: 900;
+      font-family: monospace;
+      color: #FFFFFF;
+      background: var(--bg-navy-800);
+      border: 2px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 10px 24px;
+      display: inline-block;
+      margin: 0 auto;
+    }
+
+    .halftime-versus-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .versus-card {
+      background: var(--bg-navy-800);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .versus-card.mine {
+      border-color: var(--team-accent);
+      box-shadow: 0 0 16px var(--team-glow);
+    }
+
+    .versus-team-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .versus-score-val {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--gold-light);
+    }
+
+    .halftime-teaser {
+      background: linear-gradient(135deg, rgba(136, 19, 55, 0.4), rgba(197, 155, 39, 0.3));
+      border: 1px solid var(--gold-light);
+      border-radius: 10px;
+      padding: 16px;
+      color: #F8FAFC;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Game Over / Victory Podium Phase Screen */
+    .gameover-content {
+      text-align: center;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .gameover-trophy {
+      font-size: 52px;
+      animation: trophyBounce 1.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes trophyBounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+
+    .gameover-banner {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+
+    .gameover-subtext {
+      font-size: 16px;
+      color: #CBD5E1;
+      max-width: 500px;
+    }
+
+    .podium-scores-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .podium-team-col {
+      background: var(--bg-navy-800);
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+
+    .podium-team-col.winner {
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 0 24px var(--gold-glow);
+    }
+
+    .podium-crown {
+      position: absolute;
+      top: -14px;
+      font-size: 20px;
+    }
+
+    .tier-breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      max-width: 440px;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .tier-breakdown-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Footer / Keyboard Hint */
+    .controller-footer {
+      text-align: center;
+      padding: 10px 16px 16px;
+      font-size: 11px;
+      color: #64748B;
+      letter-spacing: 0.5px;
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 480px) {
+      .header {
+        padding: 10px 12px;
+      }
+      .team-motto {
+        display: none;
+      }
+      .team-badge-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+      }
+      .main-wrapper {
+        padding: 10px;
+        gap: 12px;
+      }
+      .panel-card {
+        padding: 16px 14px;
+      }
+      .prompt-title {
+        font-size: 20px;
+      }
+      .word-input {
+        height: 50px;
+        font-size: 17px;
+        padding: 0 14px;
+      }
+      .submit-btn {
+        height: 50px;
+        padding: 0 16px;
+        font-size: 16px;
+      }
+      .timer-text {
+        font-size: 22px;
+      }
+    }
+
+    /* Pause Overlay */
+    .team-pause-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .team-pause-modal {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      border: 2px solid #F59E0B;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .team-pause-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+      animation: blink 1.2s infinite;
+    }
+
+    .team-pause-title {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      color: #FDE047;
+      margin-bottom: 8px;
+    }
+
+    .team-pause-desc {
+      font-size: 14px;
+      color: #CBD5E1;
+      line-height: 1.5;
+    }
+
+    /* Category Flash */
+    .category-rotated-flash {
+      animation: categoryCardPulse 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes categoryCardPulse {
+      0% { transform: scale(0.97); box-shadow: 0 0 0 rgba(251, 191, 36, 0); }
+      40% { transform: scale(1.03); box-shadow: 0 0 30px rgba(251, 191, 36, 0.85); border-color: #FBBF24; }
+      100% { transform: scale(1); box-shadow: 0 0 0 rgba(251, 191, 36, 0); }
+    }
+
+    /* Category Timer Tag */
+    .cat-timer-pill {
+      font-size: 15px;
+      font-family: var(--font-mono, monospace);
+      font-weight: 800;
+      color: var(--gold-light);
+      background: rgba(197, 155, 39, 0.22);
+      border: 1.5px solid rgba(197, 155, 39, 0.6);
+      padding: 4px 12px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+  </style>
+  <script src="mqtt.min.js"></script>
+  <script src="game-engine.js"></script>
+</head>
+<body class="theme-team1">
+
+  <!-- Controller Pause Overlay -->
+  <div id="teamPauseOverlay" class="team-pause-overlay" style="display: none;">
+    <div class="team-pause-modal">
+      <div class="team-pause-icon">⏸</div>
+      <h2 class="team-pause-title">Contest Paused by Host</h2>
+      <p class="team-pause-desc">
+        The round clock and category rotation have been frozen by the game host.<br>
+        Please stand by...
+      </p>
+    </div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="header">
+    <div class="brand-section">
+      <div class="team-badge-icon" id="teamBadgeIcon">🔑</div>
+      <div class="team-info">
+        <div class="team-name-title" id="teamNameDisplay">
+          <span id="teamLabelText">Team A</span>
+          <span style="font-weight: 400; opacity: 0.85;">(St. Peter)</span>
+        </div>
+        <div class="team-motto" id="teamMottoDisplay">Tu es Petrus — Rock of the Church</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Team Selector Switcher -->
+      <div class="team-switcher" title="Switch controller team">
+        <button type="button" class="team-switch-btn active" id="btnTeam1" onclick="switchTeam('team1')">Team 1</button>
+        <button type="button" class="team-switch-btn" id="btnTeam2" onclick="switchTeam('team2')">Team 2</button>
+      </div>
+
+      <!-- WebSocket Connection Status -->
+      <div class="status-indicator" id="wsStatusBadge" title="Click to reconnect" onclick="reconnectWebSocket()">
+        <span class="status-dot" id="wsStatusDot"></span>
+        <span id="wsStatusText">Connecting...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Controller Stage -->
+  <main class="main-wrapper">
+
+    <!-- =====================================================================
+         PHASE 1: LOBBY SCREEN (Waiting for Match Start)
+         ===================================================================== -->
+    <section class="phase-screen active" id="lobbyScreen">
+      <div class="panel-card lobby-content">
+        <div class="lobby-cross-icon">✠</div>
+        <div>
+          <h1 class="lobby-title">Catholic Krillion ("Credillion")</h1>
+          <p class="lobby-subtitle">Real-Time Vatican Vaults Word Association Party Game</p>
+        </div>
+
+        <div class="lobby-status-card">
+          <div class="team-badge-icon" id="lobbyTeamIcon" style="width: 44px; height: 44px; font-size: 22px;">🔑</div>
+          <div class="lobby-team-preview">
+            <div style="font-weight: 700; color: var(--team-accent);" id="lobbyTeamName">Assigned: Team A (St. Peter)</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Awaiting Host to begin Round 1...</div>
+          </div>
+        </div>
+
+        <ul class="lobby-rules-list">
+          <li><strong>Fast Word Association:</strong> Type words matching the Catholic category as quickly as possible.</li>
+          <li><strong>Vatican Vaults Depth:</strong> Rarer words plunge deeper and award up to 100 points!</li>
+          <li><strong>No Duplicates:</strong> Each word can only be scored once by your team per round.</li>
+          <li><strong>Duc In Altum:</strong> Round 2 multiplies all points and depths by 1.5×!</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         PHASE 2 & 4: ACTIVE ROUND SCREEN (Round 1 & Round 2 Duc In Altum)
+         ===================================================================== -->
+    <section class="phase-screen" id="roundScreen">
+
+      <!-- Round 2 Multiplier Banner -->
+      <div class="multiplier-banner" id="round2MultiplierBanner">
+        <span>🔥</span>
+        <span>Round 2: Duc In Altum — 1.5× Depth & Point Multiplier Active!</span>
+        <span>🔥</span>
+      </div>
+
+      <!-- Stats Bar (Points, Timer, Vault Depth) -->
+      <div class="stats-bar">
+        <div class="stat-box left">
+          <span class="stat-label">Team Score</span>
+          <span class="stat-value" id="currentPointsVal">0 pts</span>
+        </div>
+
+        <div class="timer-center">
+          <div class="timer-pill" id="timerPill">
+            <span class="timer-text" id="roundTimerDisplay">3:00</span>
+          </div>
+          <span class="round-tag" id="roundTag">Round 1 of 2</span>
+        </div>
+
+        <div class="stat-box right">
+          <span class="stat-label">Vault Depth</span>
+          <span class="stat-value meters" id="currentDepthVal">0 m</span>
+        </div>
+      </div>
+
+      <!-- Category Prompt Card -->
+      <div class="panel-card prompt-card" id="teamPromptCard">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div class="prompt-category-tag" id="promptCategoryTag" style="margin-bottom: 0;">Catholic Faith & Prayer</div>
+          <span class="cat-timer-pill" id="teamCatTimerPill">⏱ 60s</span>
+        </div>
+        <h2 class="prompt-title" id="promptTitleDisplay">Words in the Our Father / Lord's Prayer</h2>
+        <p class="prompt-description" id="promptDescDisplay">Name words that appear in the traditional Catholic Lord's Prayer (Our Father)!</p>
+      </div>
+
+      <!-- Real-Time Typing & Word Submission Form -->
+      <div class="input-section">
+        <form class="input-form" id="submissionForm" onsubmit="handleWordSubmit(event)">
+          <div class="word-input-container" id="wordInputWrapper">
+            <input 
+              type="text" 
+              id="wordInput" 
+              class="word-input" 
+              placeholder="Type a word and hit Enter..." 
+              autocomplete="off" 
+              autocorrect="off" 
+              autocapitalize="off" 
+              spellcheck="false" 
+              enterkeyhint="send"
+              autofocus
+              oninput="handleKeystrokeInput(event)"
+            />
+          </div>
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span>Submit</span>
+            <span>↵</span>
+          </button>
+        </form>
+
+        <!-- Live Keystroke Status -->
+        <div class="typing-status-hint">
+          <span class="typing-sync-badge">
+            <span>⚡</span>
+            <span>Streaming live to Screen 1</span>
+          </span>
+          <span id="charCountHint">0 chars</span>
+        </div>
+
+        <!-- Dynamic Feedback Banner / Toast -->
+        <div class="feedback-toast" id="feedbackToast">
+          <div class="feedback-content-left">
+            <span class="feedback-badge" id="feedbackTierBadge">Altar Server</span>
+            <span id="feedbackMessage">"Amen" accepted!</span>
+          </div>
+          <div class="feedback-score-gain" id="feedbackScoreGain">+30 pts • +300m</div>
+        </div>
+      </div>
+
+      <!-- Recent Scored Words Panel -->
+      <div class="panel-card recent-words-panel">
+        <div class="panel-header-row">
+          <div class="panel-title">
+            <span>📜</span>
+            <span>Words Scored by Your Team</span>
+          </div>
+          <div class="words-count-badge" id="wordsCountBadge">0 Scored</div>
+        </div>
+
+        <div class="words-list-scroll" id="recentWordsList">
+          <div class="empty-words-placeholder" id="emptyWordsPlaceholder">
+            No words scored yet in this round — start typing above!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         PHASE 3: HALFTIME INTERMISSION SCREEN (30s)
+         ===================================================================== -->
+    <section class="phase-screen" id="halftimeScreen">
+      <div class="panel-card halftime-content">
+        <div style="font-size: 38px;">⏳</div>
+        <div>
+          <h2 class="halftime-title">Halftime Intermission</h2>
+          <p style="color: #94A3B8; font-size: 14px;">Review round 1 scores before plunging into Duc In Altum!</p>
+        </div>
+
+        <div class="halftime-timer-box" id="halftimeTimerDisplay">0:30</div>
+
+        <div class="halftime-versus-grid">
+          <div class="versus-card" id="halftimeMyCard">
+            <div class="versus-team-label" id="halftimeMyTeamName">Your Team</div>
+            <div class="versus-score-val" id="halftimeMyPoints">0</div>
+            <div style="font-size: 12px; color: #93C5FD;" id="halftimeMyDepth">0m Depth</div>
+          </div>
+          <div class="versus-card" id="halftimeOpponentCard">
+            <div class="versus-team-label" id="halftimeOppTeamName">Opponent</div>
+            <div class="versus-score-val" id="halftimeOppPoints">0</div>
+            <div style="font-size: 12px; color: #93C5FD;" id="halftimeOppDepth">0m Depth</div>
+          </div>
+        </div>
+
+        <div class="halftime-teaser">
+          <strong>Next: Round 2 — Duc In Altum (Into The Deep)</strong><br>
+          Prepare your fastest fingers! Round 2 features a high-stakes <strong>1.5× Depth & Point Multiplier</strong> on all verified answers.
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         PHASE 5: GAME OVER / VICTORY PODIUM SCREEN
+         ===================================================================== -->
+    <section class="phase-screen" id="gameoverScreen">
+      <div class="panel-card gameover-content">
+        <div class="gameover-trophy">🏆</div>
+        <div>
+          <h2 class="gameover-banner" id="gameoverResultTitle">Match Concluded</h2>
+          <p class="gameover-subtext" id="gameoverResultSubtext">The expedition into the Vatican Vaults has finished!</p>
+        </div>
+
+        <div class="podium-scores-box">
+          <div class="podium-team-col" id="podiumColTeam1">
+            <div class="podium-crown" id="crownTeam1" style="display: none;">👑</div>
+            <div style="font-size: 18px;">🔑</div>
+            <div style="font-weight: 700; color: #E4BC4A;">Team A (St. Peter)</div>
+            <div style="font-size: 28px; font-weight: 900; color: #FFFFFF;" id="podiumPointsTeam1">0 pts</div>
+            <div style="font-size: 13px; color: #93C5FD;" id="podiumDepthTeam1">0m depth</div>
+          </div>
+
+          <div class="podium-team-col" id="podiumColTeam2">
+            <div class="podium-crown" id="crownTeam2" style="display: none;">👑</div>
+            <div style="font-size: 18px;">⚔️</div>
+            <div style="font-weight: 700; color: #F43F5E;">Team B (St. Paul)</div>
+            <div style="font-size: 28px; font-weight: 900; color: #FFFFFF;" id="podiumPointsTeam2">0 pts</div>
+            <div style="font-size: 13px; color: #93C5FD;" id="podiumDepthTeam2">0m depth</div>
+          </div>
+        </div>
+
+        <!-- Tier Breakdown Statistics -->
+        <div class="tier-breakdown-list">
+          <div style="font-weight: 700; margin-bottom: 4px; color: var(--gold-light);">Your Team Rarity Discoveries:</div>
+          <div class="tier-breakdown-row">
+            <span>Pew Warmer (10 pts):</span>
+            <strong id="statCountPew">0</strong>
+          </div>
+          <div class="tier-breakdown-row">
+            <span>Altar Server (30 pts):</span>
+            <strong id="statCountAltar">0</strong>
+          </div>
+          <div class="tier-breakdown-row">
+            <span>Theologian (60 pts):</span>
+            <strong id="statCountTheol">0</strong>
+          </div>
+          <div class="tier-breakdown-row">
+            <span>Doctor of the Church (85 pts):</span>
+            <strong id="statCountDoctor">0</strong>
+          </div>
+          <div class="tier-breakdown-row">
+            <span style="color: #FDE047; font-weight: 700;">One-in-a-Credillion (100 pts):</span>
+            <strong style="color: #FDE047;" id="statCountCred">0</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="controller-footer">
+    Catholic Krillion ("Credillion") &bull; Ecclesial Controller UI &bull; Sub-100ms Live Relay
+  </footer>
+
+  <!-- =========================================================================
+       Controller JavaScript Engine
+       ========================================================================= -->
+  <script>
+    (function() {
+      'use strict';
+
+      // --- 1. State & Identity Initialization ---
+      const TEAM_CONFIG = {
+        team1: {
+          id: 'team1',
+          name: 'Team A',
+          patron: 'St. Peter',
+          motto: 'Tu es Petrus — Rock of the Church',
+          emblem: '🔑',
+          themeClass: 'theme-team1',
+          accentColor: '#C59B27'
+        },
+        team2: {
+          id: 'team2',
+          name: 'Team B',
+          patron: 'St. Paul',
+          motto: 'Doctor Gentium — Teacher of the Gentiles',
+          emblem: '⚔️',
+          themeClass: 'theme-team2',
+          accentColor: '#BE123C'
+        }
+      };
+
+      const TIER_DISPLAY = {
+        pew_warmer: { name: 'Pew Warmer', pts: 10, meters: 100 },
+        altar_server: { name: 'Altar Server', pts: 30, meters: 300 },
+        theologian: { name: 'Theologian', pts: 60, meters: 600 },
+        doctor_of_the_church: { name: 'Doctor of the Church', pts: 85, meters: 850 },
+        one_in_a_credillion: { name: 'One-in-a-Credillion', pts: 100, meters: 1000 }
+      };
+
+      let currentTeam = detectTeamIdentity();
+      let socket = null;
+      let reconnectTimer = null;
+      let reconnectAttempts = 0;
+      let keystrokeSeq = 0;
+      let feedbackTimeout = null;
+
+      // Authoritative Clock Offset Tracking
+      let serverTimeOffset = 0; // serverTime - Date.now()
+      let timerEndTimestamp = 0; // Local estimate of when current phase ends
+      let timerRafId = null;
+      let currentPhase = 'lobby';
+      let currentRound = 1;
+      let currentMultiplier = 1.0;
+      let currentPromptId = null;
+      let isGamePaused = false;
+
+      // Local Scored Words Cache
+      let scoredWordsList = [];
+
+      // --- 2. Team Detection Logic ---
+      function detectTeamIdentity() {
+        // A. URL Path Detection (/team1, /team2, /team1.html, etc.)
+        const pathname = window.location.pathname.toLowerCase();
+        if (pathname.includes('team2')) return 'team2';
+        if (pathname.includes('team1')) return 'team1';
+
+        // B. Query Parameter Detection (?team=team1 or ?t=2 or ?role=team2)
+        const params = new URLSearchParams(window.location.search);
+        const paramTeam = (params.get('team') || params.get('role') || params.get('t') || '').toLowerCase();
+        if (paramTeam === 'team2' || paramTeam === '2' || paramTeam === 'b') return 'team2';
+        if (paramTeam === 'team1' || paramTeam === '1' || paramTeam === 'a') return 'team1';
+
+        // C. LocalStorage Fallback
+        const saved = localStorage.getItem('credillion_team');
+        if (saved === 'team2' || saved === 'team1') return saved;
+
+        // Default to team1
+        return 'team1';
+      }
+
+      function applyTeamTheme(teamId) {
+        currentTeam = teamId;
+        localStorage.setItem('credillion_team', teamId);
+        const cfg = TEAM_CONFIG[teamId] || TEAM_CONFIG.team1;
+
+        document.body.className = cfg.themeClass;
+        document.getElementById('teamBadgeIcon').textContent = cfg.emblem;
+        document.getElementById('lobbyTeamIcon').textContent = cfg.emblem;
+        document.getElementById('teamLabelText').textContent = cfg.name;
+        document.getElementById('teamNameDisplay').querySelector('span:nth-child(2)').textContent = `(${cfg.patron})`;
+        document.getElementById('teamMottoDisplay').textContent = cfg.motto;
+        document.getElementById('lobbyTeamName').textContent = `Assigned: ${cfg.name} (${cfg.patron})`;
+
+        // Update switcher buttons
+        const btn1 = document.getElementById('btnTeam1');
+        const btn2 = document.getElementById('btnTeam2');
+        if (teamId === 'team1') {
+          btn1.classList.add('active');
+          btn2.classList.remove('active');
+          btn2.style.display = 'none'; // When Team 1, remove the button to pick Team 2
+        } else {
+          btn2.classList.add('active');
+          btn1.classList.remove('active');
+          btn2.style.display = '';
+        }
+
+        // Halftime card highlight
+        updateHalftimeTeamLabels();
+      }
+
+      window.switchTeam = function(teamId) {
+        if (currentTeam === 'team1' && teamId === 'team2') {
+          return; // Disallow switching to Team 2 if user is Team 1
+        }
+        if (teamId !== currentTeam) {
+          applyTeamTheme(teamId);
+          // If connected, re-register with new team role
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            sendWsMessage({ type: 'REGISTER', role: teamId });
+          }
+          refocusInput();
+        }
+      };
+
+      // --- 3. Dual-Transport Connection (Local WebSocket + Cloud Relay) ---
+      let cloudRelay = null;
+      let isCloudMode = false;
+      const urlQuery = new URLSearchParams(window.location.search);
+      let activeRoomId = urlQuery.get('room') || localStorage.getItem('credillion_room') || 'credillion';
+
+      function initConnection() {
+        const hostname = window.location.hostname;
+        const isStaticHost = hostname.includes('netlify.app') || 
+                             hostname.includes('github.io') ||
+                             urlQuery.has('room') ||
+                             window.location.protocol === 'file:';
+
+        if (isStaticHost) {
+          initCloudRelay();
+        } else {
+          initWebSocket();
+        }
+      }
+
+      function initCloudRelay() {
+        isCloudMode = true;
+        updateWsStatus('connecting');
+        if (cloudRelay) cloudRelay.disconnect();
+
+        cloudRelay = new CloudRelay({
+          roomId: activeRoomId,
+          role: currentTeam,
+          onMessage: function(msg) {
+            handleIncomingMessage(msg);
+          },
+          onStatus: function(status) {
+            updateWsStatus(status);
+          }
+        });
+        cloudRelay.connect();
+      }
+
+      function initWebSocket() {
+        if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+          return;
+        }
+
+        updateWsStatus('connecting');
+
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.host || 'localhost:3000';
+        const wsUrl = `${protocol}//${host}`;
+
+        try {
+          socket = new WebSocket(wsUrl);
+        } catch (err) {
+          console.warn('[Credillion] WS instantiation failed, falling back to Cloud Relay:', err);
+          initCloudRelay();
+          return;
+        }
+
+        socket.onopen = function() {
+          console.log('[Credillion] WebSocket connected as', currentTeam);
+          reconnectAttempts = 0;
+          updateWsStatus('connected');
+
+          sendWsMessage({
+            type: 'REGISTER',
+            role: currentTeam,
+            timestamp: Date.now()
+          });
+
+          refocusInput();
+        };
+
+        socket.onmessage = function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            handleIncomingMessage(data);
+          } catch (err) {
+            console.error('[Credillion] Malformed WS payload:', err);
+          }
+        };
+
+        socket.onerror = function(err) {
+          console.warn('[Credillion] WS error, falling back to Cloud Relay:', err);
+          if (!isCloudMode && reconnectAttempts >= 1) {
+            initCloudRelay();
+          }
+        };
+
+        socket.onclose = function() {
+          console.warn('[Credillion] WS connection closed');
+          if (!isCloudMode && reconnectAttempts >= 2) {
+            console.log('[Credillion] Switching to Cloud Relay fallback...');
+            initCloudRelay();
+            return;
+          }
+          updateWsStatus('disconnected');
+          scheduleReconnect();
+        };
+      }
+
+      function scheduleReconnect() {
+        if (isCloudMode) {
+          if (cloudRelay) cloudRelay.connect();
+          return;
+        }
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        reconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(1.5, reconnectAttempts - 1), 5000);
+        updateWsStatus('reconnecting');
+        reconnectTimer = setTimeout(initWebSocket, delay);
+      }
+
+      window.reconnectWebSocket = function() {
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        reconnectAttempts = 0;
+        if (isCloudMode) {
+          initCloudRelay();
+        } else {
+          initWebSocket();
+        }
+      };
+
+      function updateWsStatus(status) {
+        const dot = document.getElementById('wsStatusDot');
+        const text = document.getElementById('wsStatusText');
+        const cfg = TEAM_CONFIG[currentTeam];
+
+        dot.className = 'status-dot';
+        if (status === 'connected') {
+          dot.classList.add('connected');
+          text.textContent = `${cfg.name} (Live)`;
+        } else if (status === 'reconnecting' || status === 'connecting') {
+          dot.classList.add('reconnecting');
+          text.textContent = 'Connecting...';
+        } else {
+          text.textContent = 'Offline (Click)';
+        }
+      }
+
+      function sendWsMessage(msgObj) {
+        if (isCloudMode && cloudRelay && cloudRelay.connected) {
+          return cloudRelay.publish(msgObj);
+        }
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify(msgObj));
+          return true;
+        }
+        if (cloudRelay && cloudRelay.connected) {
+          return cloudRelay.publish(msgObj);
+        }
+        return false;
+      }
+
+      // --- 4. Incoming WebSocket Message Dispatcher ---
+      function handleIncomingMessage(msg) {
+        switch (msg.type) {
+          case 'REGISTER_ACK':
+            console.log('[Credillion] Registered with server:', msg);
+            if (msg.phase) setGamePhase(msg.phase, msg.round);
+            if (msg.scores) updateScores(msg.scores);
+            break;
+
+          case 'STATE_SYNC':
+            if (msg.phase) setGamePhase(msg.phase, msg.round);
+            if (typeof msg.multiplier === 'number') currentMultiplier = msg.multiplier;
+            if (msg.prompt) updatePrompt(msg.prompt);
+            if (msg.scores) updateScores(msg.scores);
+            if (typeof msg.paused === 'boolean') setPausedState(msg.paused);
+            if (typeof msg.categoryRemainingSeconds === 'number') updateTeamCategoryTimer(msg.categoryRemainingSeconds);
+            break;
+
+          case 'TIMER_SYNC':
+            if (msg.phase && msg.phase !== currentPhase) {
+              setGamePhase(msg.phase, msg.round);
+            }
+            if (typeof msg.paused === 'boolean') setPausedState(msg.paused);
+            if (typeof msg.categoryRemainingSeconds === 'number') updateTeamCategoryTimer(msg.categoryRemainingSeconds);
+            handleTimerSync(msg);
+            break;
+
+          case 'CATEGORY_ROTATED':
+            if (msg.prompt) {
+              updatePrompt(msg.prompt);
+              if (typeof msg.categoryRemainingSeconds === 'number') updateTeamCategoryTimer(msg.categoryRemainingSeconds);
+            }
+            break;
+
+          case 'WORD_EVALUATED':
+            handleWordEvaluated(msg);
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      function setPausedState(paused) {
+        isGamePaused = Boolean(paused);
+        const overlay = document.getElementById('teamPauseOverlay');
+        const input = document.getElementById('wordInput');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (overlay) {
+          overlay.style.display = isGamePaused ? 'flex' : 'none';
+        }
+        if (input) {
+          input.disabled = isGamePaused;
+          if (!isGamePaused) {
+            setTimeout(() => input.focus(), 50);
+          }
+        }
+        if (submitBtn) {
+          submitBtn.disabled = isGamePaused;
+        }
+      }
+
+      function updateTeamCategoryTimer(sec) {
+        const pill = document.getElementById('teamCatTimerPill');
+        if (pill) {
+          pill.textContent = `⏱ ${sec}s`;
+        }
+      }
+
+      // --- 5. Game Phase & Screen Management ---
+      function setGamePhase(newPhase, roundNumber) {
+        currentPhase = newPhase || 'lobby';
+        currentRound = roundNumber || (currentPhase === 'round2' ? 2 : 1);
+
+        const screens = {
+          lobby: document.getElementById('lobbyScreen'),
+          round1: document.getElementById('roundScreen'),
+          halftime: document.getElementById('halftimeScreen'),
+          round2: document.getElementById('roundScreen'),
+          gameover: document.getElementById('gameoverScreen')
+        };
+
+        // Hide all screens
+        Object.values(screens).forEach(el => {
+          if (el) el.classList.remove('active');
+        });
+
+        // Show active screen
+        const target = screens[currentPhase] || screens.lobby;
+        if (target) target.classList.add('active');
+
+        // Round & Multiplier indicators
+        const round2Banner = document.getElementById('round2MultiplierBanner');
+        const roundTag = document.getElementById('roundTag');
+
+        if (currentPhase === 'round2') {
+          round2Banner.classList.add('visible');
+          roundTag.textContent = 'Round 2: Duc In Altum';
+          roundTag.style.color = '#FDE047';
+        } else {
+          round2Banner.classList.remove('visible');
+          roundTag.textContent = `Round ${currentRound} of 2`;
+          roundTag.style.color = 'var(--gold-light)';
+        }
+
+        // Halftime preparation
+        if (currentPhase === 'halftime') {
+          updateHalftimeTeamLabels();
+        }
+
+        // Game over podium preparation
+        if (currentPhase === 'gameover') {
+          updatePodiumStats();
+        }
+
+        refocusInput();
+      }
+
+      // --- 6. Prompt & Scores Rendering ---
+      function updatePrompt(promptObj) {
+        if (!promptObj) return;
+        const titleEl = document.getElementById('promptTitleDisplay');
+        const descEl = document.getElementById('promptDescDisplay');
+        const tagEl = document.getElementById('promptCategoryTag');
+        const cardEl = document.getElementById('teamPromptCard');
+
+        const isNewPrompt = currentPromptId && promptObj.id && currentPromptId !== promptObj.id;
+        currentPromptId = promptObj.id;
+
+        if (promptObj.title) titleEl.textContent = promptObj.title;
+        if (promptObj.prompt || promptObj.description) {
+          descEl.textContent = promptObj.prompt || promptObj.description;
+        }
+        if (promptObj.id) {
+          tagEl.textContent = promptObj.id.replace(/_/g, ' ');
+        }
+
+        if (isNewPrompt) {
+          // Clear input and streaming keystrokes on category change
+          const input = document.getElementById('wordInput');
+          if (input) input.value = '';
+          const hint = document.getElementById('charCountHint');
+          if (hint) hint.textContent = '0 chars';
+
+          // Animate flash on prompt card
+          if (cardEl) {
+            cardEl.classList.remove('category-rotated-flash');
+            void cardEl.offsetWidth;
+            cardEl.classList.add('category-rotated-flash');
+          }
+        }
+      }
+
+      function updateScores(scoresObj) {
+        if (!scoresObj) return;
+        const teamScore = scoresObj[currentTeam];
+        if (teamScore) {
+          document.getElementById('currentPointsVal').textContent = `${teamScore.points} pts`;
+          document.getElementById('currentDepthVal').textContent = `${teamScore.depthMeters} m`;
+
+          if (Array.isArray(teamScore.wordsScored)) {
+            scoredWordsList = teamScore.wordsScored;
+            renderScoredWords();
+          }
+        }
+
+        // Update Halftime Grid
+        const oppTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+        const oppScore = scoresObj[oppTeam];
+
+        if (teamScore) {
+          document.getElementById('halftimeMyPoints').textContent = teamScore.points;
+          document.getElementById('halftimeMyDepth').textContent = `${teamScore.depthMeters}m Depth`;
+        }
+        if (oppScore) {
+          document.getElementById('halftimeOppPoints').textContent = oppScore.points;
+          document.getElementById('halftimeOppDepth').textContent = `${oppScore.depthMeters}m Depth`;
+        }
+
+        // Update Podium Scores
+        const t1 = scoresObj.team1 || { points: 0, depthMeters: 0 };
+        const t2 = scoresObj.team2 || { points: 0, depthMeters: 0 };
+        document.getElementById('podiumPointsTeam1').textContent = `${t1.points} pts`;
+        document.getElementById('podiumDepthTeam1').textContent = `${t1.depthMeters}m depth`;
+        document.getElementById('podiumPointsTeam2').textContent = `${t2.points} pts`;
+        document.getElementById('podiumDepthTeam2').textContent = `${t2.depthMeters}m depth`;
+      }
+
+      function updateHalftimeTeamLabels() {
+        const myCfg = TEAM_CONFIG[currentTeam];
+        const oppTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+        const oppCfg = TEAM_CONFIG[oppTeam];
+
+        const myName = document.getElementById('halftimeMyTeamName');
+        const oppName = document.getElementById('halftimeOppTeamName');
+        if (myName && myCfg) myName.textContent = `${myCfg.name} (${myCfg.patron})`;
+        if (oppName && oppCfg) oppName.textContent = `${oppCfg.name} (${oppCfg.patron})`;
+
+        const myCard = document.getElementById('halftimeMyCard');
+        const oppCard = document.getElementById('halftimeOpponentCard') || document.getElementById('halftimeOppCard');
+        if (myCard) myCard.className = 'versus-card mine';
+        if (oppCard) oppCard.className = 'versus-card';
+      }
+
+      function updatePodiumStats() {
+        const t1Pts = parseInt(document.getElementById('podiumPointsTeam1').textContent, 10) || 0;
+        const t2Pts = parseInt(document.getElementById('podiumPointsTeam2').textContent, 10) || 0;
+
+        const crown1 = document.getElementById('crownTeam1');
+        const crown2 = document.getElementById('crownTeam2');
+        const col1 = document.getElementById('podiumColTeam1');
+        const col2 = document.getElementById('podiumColTeam2');
+        const titleEl = document.getElementById('gameoverResultTitle');
+        const subtextEl = document.getElementById('gameoverResultSubtext');
+
+        crown1.style.display = 'none';
+        crown2.style.display = 'none';
+        col1.classList.remove('winner');
+        col2.classList.remove('winner');
+
+        if (t1Pts > t2Pts) {
+          crown1.style.display = 'block';
+          col1.classList.add('winner');
+          if (currentTeam === 'team1') {
+            titleEl.textContent = 'VICTORY! Saint Peter Triumphs!';
+            subtextEl.textContent = 'Your team successfully unlocked the deepest chambers of the Vatican Vaults!';
+          } else {
+            titleEl.textContent = 'Saint Peter Reigned Victorious';
+            subtextEl.textContent = 'A spirited effort in the holy competition! Saint Peter captured the lead.';
+          }
+        } else if (t2Pts > t1Pts) {
+          crown2.style.display = 'block';
+          col2.classList.add('winner');
+          if (currentTeam === 'team2') {
+            titleEl.textContent = 'VICTORY! Saint Paul Triumphs!';
+            subtextEl.textContent = 'Your team wielded the sword of truth to claim the highest depth!';
+          } else {
+            titleEl.textContent = 'Saint Paul Reigned Victorious';
+            subtextEl.textContent = 'A valiant contest! Saint Paul reached the greatest depth in the vaults.';
+          }
+        } else {
+          titleEl.textContent = 'HOLY COMMUNION — IT IS A TIE!';
+          subtextEl.textContent = 'Both teams reached the exact same depth in the holy archives!';
+        }
+
+        // Tally word rarity tiers for current team
+        const counts = {
+          pew_warmer: 0,
+          altar_server: 0,
+          theologian: 0,
+          doctor_of_the_church: 0,
+          one_in_a_credillion: 0
+        };
+
+        scoredWordsList.forEach(item => {
+          if (counts[item.tier] !== undefined) counts[item.tier]++;
+        });
+
+        document.getElementById('statCountPew').textContent = counts.pew_warmer;
+        document.getElementById('statCountAltar').textContent = counts.altar_server;
+        document.getElementById('statCountTheol').textContent = counts.theologian;
+        document.getElementById('statCountDoctor').textContent = counts.doctor_of_the_church;
+        document.getElementById('statCountCred').textContent = counts.one_in_a_credillion;
+      }
+
+      // --- 7. Synchronized Authoritative Timer ---
+      function handleTimerSync(msg) {
+        if (!msg) return;
+        const now = Date.now();
+        if (typeof msg.serverTime === 'number') {
+          serverTimeOffset = msg.serverTime - now;
+        }
+
+        const remainingMs = typeof msg.remainingMs === 'number' ? msg.remainingMs : 0;
+        timerEndTimestamp = now + remainingMs;
+
+        renderTimerTick(remainingMs);
+      }
+
+      function startTimerLoop() {
+        function tick() {
+          const now = Date.now();
+          const remainingMs = Math.max(0, timerEndTimestamp - now);
+
+          renderTimerTick(remainingMs);
+          timerRafId = requestAnimationFrame(tick);
+        }
+        if (!timerRafId) {
+          timerRafId = requestAnimationFrame(tick);
+        }
+      }
+
+      function renderTimerTick(remainingMs) {
+        const totalSec = Math.ceil(remainingMs / 1000);
+        const mins = Math.floor(totalSec / 60);
+        const secs = totalSec % 60;
+        const formatted = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+        // Round timer
+        const timerEl = document.getElementById('roundTimerDisplay');
+        const pillEl = document.getElementById('timerPill');
+        if (timerEl) timerEl.textContent = formatted;
+
+        if (pillEl) {
+          if (remainingMs <= 15000 && remainingMs > 0 && (currentPhase === 'round1' || currentPhase === 'round2')) {
+            pillEl.classList.add('urgent');
+          } else {
+            pillEl.classList.remove('urgent');
+          }
+        }
+
+        // Halftime timer
+        const halfEl = document.getElementById('halftimeTimerDisplay');
+        if (halfEl) halfEl.textContent = formatted;
+      }
+
+      // --- 8. Real-Time Keystroke Streaming (< 100ms) ---
+      window.handleKeystrokeInput = function(event) {
+        const input = event.target;
+        const text = input.value;
+        const charHint = document.getElementById('charCountHint');
+        if (charHint) charHint.textContent = `${text.length} chars`;
+
+        keystrokeSeq++;
+        sendWsMessage({
+          type: 'INPUT_UPDATE',
+          team: currentTeam,
+          text: text,
+          seq: keystrokeSeq,
+          timestamp: Date.now()
+        });
+      };
+
+      // --- 9. Word Submission Handler & Instant Feedback ---
+      let isSubmitting = false;
+      let lastSubmittedWord = '';
+      let lastSubmitTime = 0;
+
+      window.handleWordSubmit = function(event) {
+        if (event) event.preventDefault();
+
+        const input = document.getElementById('wordInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const rawWord = input ? input.value.trim() : '';
+
+        if (!rawWord) {
+          triggerInputShake('invalid');
+          showFeedbackToast('error-invalid', 'Empty Submission', 'Please enter a word first!', '+0 pts');
+          refocusInput();
+          return;
+        }
+
+        // Spam debounce / cooldown: enforce minimum gap between submissions
+        const now = Date.now();
+        if (now - lastSubmitTime < 400 || isSubmitting) {
+          triggerInputShake('invalid');
+          showFeedbackToast('error-invalid', 'Slow Down!', 'Only one word at a time! Please wait a moment.', '+0 pts');
+          refocusInput();
+          return;
+        }
+
+        // Prevent immediate consecutive duplicate spamming of the same word
+        if (rawWord.toLowerCase() === lastSubmittedWord.toLowerCase()) {
+          triggerInputShake('duplicate');
+          showFeedbackToast('error-duplicate', 'Already Submitted', `"${rawWord}" was just submitted! Only one word at a time.`, '+0 pts');
+          if (input) input.value = '';
+          refocusInput();
+          return;
+        }
+
+        lastSubmittedWord = rawWord;
+        lastSubmitTime = now;
+        isSubmitting = true;
+
+        if (submitBtn) {
+          submitBtn.classList.add('submitting');
+          submitBtn.disabled = true;
+        }
+
+        // Send submission immediately
+        keystrokeSeq++;
+        sendWsMessage({
+          type: 'SUBMIT_WORD',
+          word: rawWord,
+          team: currentTeam,
+          seq: keystrokeSeq,
+          timestamp: Date.now()
+        });
+
+        // Clear input field immediately
+        if (input) input.value = '';
+        const charHint = document.getElementById('charCountHint');
+        if (charHint) charHint.textContent = '0 chars';
+
+        // Clear live typing on Screen 1 immediately
+        keystrokeSeq++;
+        sendWsMessage({
+          type: 'INPUT_UPDATE',
+          team: currentTeam,
+          text: '',
+          seq: keystrokeSeq,
+          timestamp: Date.now()
+        });
+
+        // Cooldown safety unlock
+        setTimeout(() => {
+          isSubmitting = false;
+          if (submitBtn) {
+            submitBtn.classList.remove('submitting');
+            submitBtn.disabled = false;
+          }
+          refocusInput();
+        }, 400);
+
+        refocusInput();
+      };
+
+      function handleWordEvaluated(msg) {
+        // Unlock submission state when evaluation returns
+        isSubmitting = false;
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+          submitBtn.classList.remove('submitting');
+          submitBtn.disabled = false;
+        }
+
+        // Only trigger visual feedback for our team's submissions
+        if (msg.team !== currentTeam) {
+          // If opponent scored, update scores silently
+          if (msg.scores) updateScores(msg.scores);
+          return;
+        }
+
+        const res = msg.result || {};
+        if (msg.scores) updateScores(msg.scores);
+
+        if (res.accepted) {
+          // Positive feedback: green/gold radiant glow
+          triggerInputGlow();
+          const tierInfo = TIER_DISPLAY[res.tier] || { name: 'Verified Word', pts: res.points, meters: res.depthMeters };
+          const canonical = res.canonical || msg.word;
+          const multNotice = currentPhase === 'round2' ? ' (1.5×)' : '';
+
+          showFeedbackToast(
+            `tier-${res.tier || 'pew_warmer'}`,
+            tierInfo.name + multNotice,
+            `"${canonical}" accepted!`,
+            `+${res.points} pts • +${res.depthMeters}m`
+          );
+        } else {
+          // Negative feedback: duplicate, rate limited, multiple words, or not found
+          if (res.reason === 'duplicate') {
+            triggerInputShake('duplicate');
+            showFeedbackToast(
+              'error-duplicate',
+              'Already Scored!',
+              res.message || `"${res.canonical || msg.word}" was already scored! Only one word at a time.`,
+              '+0 pts'
+            );
+          } else if (res.reason === 'rate_limited') {
+            triggerInputShake('invalid');
+            showFeedbackToast(
+              'error-duplicate',
+              'Slow Down!',
+              'Only one word at a time! Please wait a moment between words.',
+              '+0 pts'
+            );
+          } else if (res.reason === 'multiple_words') {
+            triggerInputShake('invalid');
+            showFeedbackToast(
+              'error-invalid',
+              'One Word at a Time',
+              'Please enter only one word at a time!',
+              '+0 pts'
+            );
+          } else if (res.reason === 'not_found') {
+            triggerInputShake('not_found');
+            showFeedbackToast(
+              'error-not_found',
+              'Not Found in Vaults',
+              `"${msg.word}" was not found for this category.`,
+              '+0 pts'
+            );
+          } else {
+            triggerInputShake('invalid');
+            showFeedbackToast(
+              'error-invalid',
+              'Invalid Input',
+              res.message || `"${msg.word}" is not valid.`,
+              '+0 pts'
+            );
+          }
+        }
+      }
+
+      function triggerInputGlow() {
+        const wrapper = document.getElementById('wordInputWrapper');
+        wrapper.classList.remove('feedback-success', 'feedback-shake');
+        // Force reflow
+        void wrapper.offsetWidth;
+        wrapper.classList.add('feedback-success');
+      }
+
+      function triggerInputShake(type) {
+        const wrapper = document.getElementById('wordInputWrapper');
+        wrapper.classList.remove('feedback-success', 'feedback-shake');
+        // Force reflow
+        void wrapper.offsetWidth;
+        wrapper.classList.add('feedback-shake');
+      }
+
+      function showFeedbackToast(styleClass, badgeText, messageText, scoreGainText) {
+        const toast = document.getElementById('feedbackToast');
+        const badge = document.getElementById('feedbackTierBadge');
+        const msg = document.getElementById('feedbackMessage');
+        const score = document.getElementById('feedbackScoreGain');
+
+        if (feedbackTimeout) clearTimeout(feedbackTimeout);
+
+        toast.className = `feedback-toast visible ${styleClass}`;
+        badge.textContent = badgeText;
+        msg.textContent = messageText;
+        score.textContent = scoreGainText;
+
+        feedbackTimeout = setTimeout(() => {
+          toast.classList.remove('visible');
+        }, 3200);
+      }
+
+      // --- 10. Scored Words Feed Rendering ---
+      function renderScoredWords() {
+        const listEl = document.getElementById('recentWordsList');
+        const badgeEl = document.getElementById('wordsCountBadge');
+        const placeholderEl = document.getElementById('emptyWordsPlaceholder');
+
+        badgeEl.textContent = `${scoredWordsList.length} Scored`;
+
+        if (scoredWordsList.length === 0) {
+          if (placeholderEl) placeholderEl.style.display = 'block';
+          listEl.innerHTML = '';
+          listEl.appendChild(placeholderEl);
+          return;
+        }
+
+        // Render in reverse chronological order (newest first)
+        const reversed = [...scoredWordsList].reverse();
+        listEl.innerHTML = '';
+
+        reversed.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'scored-word-item';
+
+          const tierKey = item.tier || 'pew_warmer';
+          const tierInfo = TIER_DISPLAY[tierKey] || { name: 'Pew Warmer' };
+
+          row.innerHTML = `
+            <div class="scored-word-left">
+              <span class="scored-word-text">${escapeHtml(item.word)}</span>
+              <span class="tier-pill ${tierKey}">${tierInfo.name}</span>
+            </div>
+            <div class="scored-word-right">
+              <span class="scored-word-pts">+${item.points} pts</span>
+              <span class="scored-word-depth">+${item.depthMeters}m</span>
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // --- 11. Autofocus & Keyboard Handling ---
+      function refocusInput() {
+        const input = document.getElementById('wordInput');
+        if (input && currentPhase !== 'lobby' && currentPhase !== 'halftime' && currentPhase !== 'gameover') {
+          setTimeout(() => {
+            input.focus();
+          }, 50);
+        }
+      }
+
+      // Keep focus on input unless user is clicking buttons or links
+      document.addEventListener('click', function(e) {
+        const target = e.target;
+        if (
+          target.tagName === 'INPUT' || 
+          target.tagName === 'BUTTON' || 
+          target.tagName === 'A' || 
+          target.closest('button') || 
+          target.closest('.team-switcher') ||
+          target.closest('.status-indicator')
+        ) {
+          return;
+        }
+        refocusInput();
+      });
+
+      // --- 12. Preview / Debug Mode Support ---
+      // Allows testing each phase view directly in browser via ?preview=halftime, etc.
+      const urlParams = new URLSearchParams(window.location.search);
+      const previewPhase = urlParams.get('preview');
+
+      // Bootstrapping
+      applyTeamTheme(currentTeam);
+      startTimerLoop();
+
+      if (previewPhase && ['lobby', 'round1', 'halftime', 'round2', 'gameover'].includes(previewPhase)) {
+        setGamePhase(previewPhase, previewPhase === 'round2' ? 2 : 1);
+      } else {
+        initConnection();
+      }
+
+    })();
+  </script>
+</body>
+</html>

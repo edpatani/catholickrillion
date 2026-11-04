@@ -1,0 +1,17 @@
+{
+  "name": "credillion",
+  "version": "1.0.0",
+  "description": "Catholic Krillion (Credillion) - 3-Screen 2v2 Real-Time Party Game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/verify_krillion.js",
+    "test:validator": "node test/test_validator.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.16.1",
+    "puppeteer-core": "^25.16.0",
+    "qrcode": "^1.5.4",
+    "ws": "^8.18.0"
+  }
+}

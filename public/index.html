@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catholic Krillion ("Credillion") — Host / Projector View</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       Ecclesiastical Host Header
+       ========================================================================= -->
+  <header class="host-header">
+    <div class="header-brand">
+      <span class="brand-icon">☩</span>
+      <div>
+        <div class="brand-title">Credillion</div>
+        <div class="brand-subtitle">Catholic University Real-Time Word Association</div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div id="phase-badge" class="phase-badge phase-lobby">Lobby</div>
+      <div id="multiplier-badge" class="multiplier-badge" style="display: none;">
+        <span>⚡ 1.5x DUC IN ALTUM</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button id="audio-toggle-btn" class="btn-header" title="Toggle Sound">
+        <span id="audio-icon">🔇</span>
+        <span id="audio-label">Unmute Audio</span>
+      </button>
+      <button id="btn-fullscreen" class="btn-header" title="Toggle Fullscreen">
+        <span>⛶</span> Fullscreen
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Host Persistent Command Bar (Start / Pause / Reset & 30s Category Tracker)
+       ========================================================================= -->
+  <div class="host-command-bar" id="hostCommandBar">
+    <div class="host-cmd-group">
+      <span class="host-cmd-label">Host Controls:</span>
+      <button id="btn-host-start" class="btn-host-action btn-host-start pulse-ready" title="Start match with a random category">
+        <span class="btn-icon">▶</span>
+        <span id="btn-host-start-label">Start Match</span>
+      </button>
+      <button id="btn-host-pause" class="btn-host-action btn-host-pause" title="Pause or Resume current match" disabled>
+        <span id="btn-host-pause-icon" class="btn-icon">⏸</span>
+        <span id="btn-host-pause-label">Pause</span>
+      </button>
+      <button id="btn-host-reset" class="btn-host-action btn-host-reset" title="Reset match back to Lobby">
+        <span class="btn-icon">↺</span>
+        <span>Reset</span>
+      </button>
+    </div>
+
+    <!-- Active Category 60s Indicator -->
+    <div id="host-category-tracker" class="host-category-tracker" style="display: none;">
+      <span class="cat-track-label">Next Category in:</span>
+      <span id="host-cat-timer" class="cat-track-timer font-mono">60s</span>
+      <div class="cat-track-bar">
+        <div id="host-cat-fill" class="cat-track-fill" style="width: 100%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paused Overlay Banner -->
+  <div id="host-paused-banner" class="host-paused-banner" style="display: none;">
+    <div class="pause-banner-content">
+      <span class="pause-pulse-icon">⏸</span>
+      <span class="pause-banner-title">SACRED CONTEST PAUSED</span>
+      <span class="pause-banner-sub">Round clock & 60s category rotation are frozen. Click "Resume" to continue.</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Main Content Container (Modular Views)
+       ========================================================================= -->
+  <main class="main-container">
+
+    <!-- -----------------------------------------------------------------------
+         View 1: Lobby Screen
+         ----------------------------------------------------------------------- -->
+    <section id="view-lobby" class="view-panel active">
+      <div class="lobby-hero">
+        <h1 class="lobby-title">Catholic Krillion</h1>
+        <p class="lobby-desc font-serif">
+          "Duc in altum — Put out into deep water and lower your nets for a catch."
+        </p>
+      </div>
+
+      <div id="lobby-public-banner" class="lobby-public-banner" style="display:none; margin: 0 auto 1.5rem auto; max-width: 750px; padding: 0.75rem 1.25rem; background: rgba(197, 155, 39, 0.15); border: 1px solid #C59B27; border-radius: 12px; text-align: center;">
+        <span style="font-size: 1rem; font-weight: bold; color: #C59B27;">🌐 Global Web Access Active</span>
+        <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: #E2E8F0;">
+          Players on <strong>other laptops, Wi-Fi networks, or mobile data</strong> can join directly at: 
+          <a id="lobby-public-link" href="#" target="_blank" style="color: #FBBF24; text-decoration: underline; font-weight: 600;"></a>
+        </p>
+      </div>
+
+      <div class="lobby-qr-grid">
+        <!-- Team 1 Card -->
+        <div class="qr-card team1">
+          <h3 class="font-serif text-gold">Team A (St. Peter's Keys)</h3>
+          <div class="qr-image-container">
+            <img id="qr-team1-img" src="/api/qr/team1?format=svg" alt="Scan to join Team A">
+          </div>
+          <div class="qr-url-box">
+            <code id="qr-team1-url">Loading URL...</code>
+            <button class="btn-copy" onclick="copyUrl('qr-team1-url')">📋</button>
+          </div>
+          <div id="status-team1" class="team-conn-status">Waiting for Controller...</div>
+        </div>
+
+        <!-- Team 2 Card -->
+        <div class="qr-card team2">
+          <h3 class="font-serif text-crimson">Team B (St. Paul's Sword)</h3>
+          <div class="qr-image-container">
+            <img id="qr-team2-img" src="/api/qr/team2?format=svg" alt="Scan to join Team B">
+          </div>
+          <div class="qr-url-box">
+            <code id="qr-team2-url">Loading URL...</code>
+            <button class="btn-copy" onclick="copyUrl('qr-team2-url')">📋</button>
+          </div>
+          <div id="status-team2" class="team-conn-status">Waiting for Controller...</div>
+        </div>
+      </div>
+
+      <div class="lobby-actions">
+        <button id="btn-start-match" class="btn-start-sacred">
+          Begin Sacred Contest ☩
+        </button>
+      </div>
+
+      <div id="audio-banner" class="audio-unlock-banner">
+        🔔 <strong>Audio Notice:</strong> Click anywhere or press the button above to unlock the Procedural Organ & Bell Synthesizer.
+      </div>
+    </section>
+
+    <!-- -----------------------------------------------------------------------
+         View 2: Active Match Screen (Round 1 & Round 2)
+         ----------------------------------------------------------------------- -->
+    <section id="view-game" class="view-panel">
+      <!-- Prompt & Category Display -->
+      <div class="prompt-banner" id="prompt-banner-main">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div id="category-title" class="prompt-category-title font-serif" style="margin-bottom: 0;">
+            Words in the Our Father / Lord's Prayer
+          </div>
+          <div class="category-countdown-badge" id="categoryCountdownBadge" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(197, 155, 39, 0.2); border: 1px solid #C59B27; border-radius: 20px; padding: 4px 12px; font-size: 0.85rem; color: #FDE047;">
+            <span>⏱️ Rotates in:</span>
+            <strong id="categoryTimerSec" class="font-mono">60s</strong>
+          </div>
+        </div>
+        <div id="category-prompt" class="prompt-text">
+          Name words that appear in the traditional Catholic Lord's Prayer!
+        </div>
+        <div id="category-description" class="prompt-description">
+          Two teams race into the Vatican Vaults. Rare discoveries sink deeper!
+        </div>
+      </div>
+
+      <!-- Arena Grid: Team A Descent | Circular Timer | Team B Descent -->
+      <div class="arena-grid">
+        <!-- Team A Vault Descent Meter -->
+        <div id="meter-team1" class="vault-meter-card team1">
+          <div class="meter-header">
+            <span class="meter-team-name text-gold font-serif">Team A</span>
+            <span id="points-team1" class="meter-points-badge">0 pts</span>
+          </div>
+
+          <div class="meter-track-container">
+            <div class="meter-scale">
+              <span>10,000m</span>
+              <span>8,000m</span>
+              <span>6,000m</span>
+              <span>4,000m</span>
+              <span>2,000m</span>
+              <span>0m</span>
+            </div>
+            <div class="meter-track">
+              <div id="gauge-fill-team1" class="meter-fill" style="height: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="meter-depth-readout">
+            Depth: <span id="depth-team1">0m</span>
+          </div>
+        </div>
+
+        <!-- Center Stage: Circular SVG Timer -->
+        <div class="center-stage">
+          <div id="timer-container" class="timer-container">
+            <svg class="circular-timer-svg" viewBox="0 0 200 200">
+              <circle class="timer-bg-circle" cx="100" cy="100" r="90" />
+              <circle id="timer-svg-progress" class="timer-progress-circle" cx="100" cy="100" r="90" />
+            </svg>
+            <div class="timer-text-overlay">
+              <div id="timer-display" class="timer-display">03:00</div>
+              <div id="timer-round-label" class="timer-round-label font-serif">Round 1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team B Vault Descent Meter -->
+        <div id="meter-team2" class="vault-meter-card team2">
+          <div class="meter-header">
+            <span class="meter-team-name text-crimson font-serif">Team B</span>
+            <span id="points-team2" class="meter-points-badge">0 pts</span>
+          </div>
+
+          <div class="meter-track-container">
+            <div class="meter-scale">
+              <span>10,000m</span>
+              <span>8,000m</span>
+              <span>6,000m</span>
+              <span>4,000m</span>
+              <span>2,000m</span>
+              <span>0m</span>
+            </div>
+            <div class="meter-track">
+              <div id="gauge-fill-team2" class="meter-fill" style="height: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="meter-depth-readout">
+            Depth: <span id="depth-team2">0m</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side-by-Side Dedicated Live Typing Displays (< 100ms Latency) -->
+      <div class="live-typing-container">
+        <!-- Team A Live Typing Card -->
+        <div id="live-typing-team1" class="typing-card team1">
+          <div class="typing-card-header">
+            <span class="team-typing-badge font-serif">☩ Team A Live Typing</span>
+            <span id="status-typing-team1" class="typing-status-pill">Ready</span>
+          </div>
+          <div id="box-typing-team1" class="typing-box">
+            <span id="typing-text-team1" class="typing-stream"></span>
+            <span id="cursor-team1" class="typing-cursor"></span>
+          </div>
+        </div>
+
+        <!-- Team B Live Typing Card -->
+        <div id="live-typing-team2" class="typing-card team2">
+          <div class="typing-card-header">
+            <span class="team-typing-badge font-serif">⚔ Team B Live Typing</span>
+            <span id="status-typing-team2" class="typing-status-pill">Ready</span>
+          </div>
+          <div id="box-typing-team2" class="typing-box">
+            <span id="typing-text-team2" class="typing-stream"></span>
+            <span id="cursor-team2" class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scored Discoveries Feed -->
+      <div class="scored-words-section">
+        <div class="scored-list-card">
+          <h4 class="font-serif">
+            <span>Team A Discoveries</span>
+            <span id="count-words-team1" class="text-gold">0</span>
+          </h4>
+          <div id="words-list-team1" class="scored-words-feed">
+            <span class="typing-placeholder">No discoveries yet...</span>
+          </div>
+        </div>
+
+        <div class="scored-list-card">
+          <h4 class="font-serif">
+            <span>Team B Discoveries</span>
+            <span id="count-words-team2" class="text-crimson">0</span>
+          </h4>
+          <div id="words-list-team2" class="scored-words-feed">
+            <span class="typing-placeholder">No discoveries yet...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -----------------------------------------------------------------------
+         View 3: Halftime Review Screen (30s Intermission)
+         ----------------------------------------------------------------------- -->
+    <section id="view-halftime" class="view-panel">
+      <div class="halftime-container">
+        <h2 class="halftime-title font-serif">Halftime Contemplation</h2>
+        <div class="halftime-timer-banner">
+          Resuming in: <span id="halftime-timer-display" class="text-gold">00:30</span>
+        </div>
+
+        <div class="halftime-comparison-grid">
+          <div class="comparison-card team1">
+            <h3 class="font-serif text-gold">Team A</h3>
+            <div id="halftime-score-team1" class="comparison-score">0 pts</div>
+            <div id="halftime-depth-team1" class="text-muted">Depth: 0m</div>
+            <div class="halftime-top-words">
+              <strong>Top Discoveries:</strong>
+              <div id="halftime-words-team1" class="scored-words-feed" style="margin-top: 8px;"></div>
+            </div>
+          </div>
+
+          <div class="comparison-card team2">
+            <h3 class="font-serif text-crimson">Team B</h3>
+            <div id="halftime-score-team2" class="comparison-score">0 pts</div>
+            <div id="halftime-depth-team2" class="text-muted">Depth: 0m</div>
+            <div class="halftime-top-words">
+              <strong>Top Discoveries:</strong>
+              <div id="halftime-words-team2" class="scored-words-feed" style="margin-top: 8px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="duc-in-altum-preview">
+          <h3 class="font-serif">⚡ Round 2: Duc In Altum — Into The Deep</h3>
+          <p class="text-parchment">
+            The waters deepen! All points and Vatican Vault descent depths are boosted by <strong>1.5x Multiplier</strong>.
+          </p>
+        </div>
+
+        <div>
+          <button id="btn-skip-halftime" class="btn-start-sacred" style="padding: 12px 30px; font-size: 1rem;">
+            Resume Round 2 Immediately ➔
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- -----------------------------------------------------------------------
+         View 4: Victory Podium Screen
+         ----------------------------------------------------------------------- -->
+    <section id="view-victory" class="view-panel">
+      <div class="victory-container">
+        <h1 class="victory-title font-serif">Te Deum Laudamus!</h1>
+        <p class="font-serif text-gold" style="font-size: 1.3rem;">
+          The sacred contest is finished. The Vatican Vaults have crowned their victor!
+        </p>
+
+        <!-- Podium Stage -->
+        <div class="podium-stage">
+          <!-- 2nd Place -->
+          <div id="podium-runnerup" class="podium-pillar podium-2nd">
+            <div style="font-size: 1.5rem; margin-bottom: 6px;">🥈 2nd Place</div>
+            <div id="podium-runnerup-name" class="font-serif" style="font-size: 1.2rem; font-weight: 700;">Team B</div>
+            <div id="podium-runnerup-score" class="meter-points-badge" style="margin-top: 8px;">0 pts</div>
+            <div id="podium-runnerup-depth" style="font-size: 0.85rem; color: #CBD5E1; margin-top: 4px;">0m descended</div>
+          </div>
+
+          <!-- 1st Place (Victor) -->
+          <div id="podium-winner" class="podium-pillar podium-1st">
+            <div class="podium-crown">👑</div>
+            <div style="font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; color: var(--vatican-navy);">🏆 Champions</div>
+            <div id="podium-winner-name" class="font-serif" style="font-size: 1.5rem; font-weight: 900; color: var(--vatican-navy);">Team A</div>
+            <div id="podium-winner-score" class="meter-points-badge" style="margin-top: 8px; font-size: 1.3rem; background: var(--vatican-navy); color: var(--liturgical-gold-bright);">0 pts</div>
+            <div id="podium-winner-depth" style="font-size: 0.9rem; font-weight: 700; color: var(--vatican-navy); margin-top: 4px;">0m descended</div>
+          </div>
+        </div>
+
+        <!-- Statistics Breakdown Table -->
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Team A (St. Peter's Keys)</th>
+              <th>Team B (St. Paul's Sword)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Final Score</td>
+              <td id="stat-points-t1" class="font-mono text-gold">0 pts</td>
+              <td id="stat-points-t2" class="font-mono text-crimson">0 pts</td>
+            </tr>
+            <tr>
+              <td>Max Depth Descended</td>
+              <td id="stat-depth-t1" class="font-mono">0m</td>
+              <td id="stat-depth-t2" class="font-mono">0m</td>
+            </tr>
+            <tr>
+              <td>Valid Discoveries</td>
+              <td id="stat-count-t1" class="font-mono">0 words</td>
+              <td id="stat-count-t2" class="font-mono">0 words</td>
+            </tr>
+            <tr>
+              <td>Highest Rarity Found</td>
+              <td id="stat-rarest-t1">None</td>
+              <td id="stat-rarest-t2">None</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div>
+          <button id="btn-victory-new-match" class="btn-start-sacred" style="padding: 14px 36px;">
+            Play Another Contest ☩
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       Procedural Synthesizer & Client Logic
+       ========================================================================= -->
+  <script src="mqtt.min.js"></script>
+  <script src="qrcode.min.js"></script>
+  <script src="questions-bundle.js"></script>
+  <script src="validator.js"></script>
+  <script src="game-engine.js"></script>
+  <script src="audio.js"></script>
+  <script>
+    // --- State & Globals ---
+    let ws = null;
+    let clientId = null;
+    let localIp = 'localhost';
+    let isCloudMode = false;
+    let cloudRelay = null;
+    let clientEngine = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get('room') || localStorage.getItem('credillion_room') || 'credillion';
+    let gameState = {
+      phase: 'lobby',
+      round: 0,
+      multiplier: 1.0,
+      prompt: {
+        id: 'words_in_our_father',
+        title: "Words in the Our Father / Lord's Prayer",
+        prompt: "Name words that appear in the traditional Catholic Lord's Prayer (Our Father)!",
+        description: "Accessible prayer foundation prompt for university students."
+      },
+      scores: {
+        team1: { points: 0, depthMeters: 0, wordsScored: [] },
+        team2: { points: 0, depthMeters: 0, wordsScored: [] }
+      },
+      liveTyping: { team1: '', team2: '' },
+      paused: false
+    };
+
+    // Timer state for smooth 60fps countdown
+    let timerState = {
+      remainingMs: 0,
+      totalMs: 180000,
+      serverTime: Date.now(),
+      clientAnchorTime: performance.now(),
+      active: false
+    };
+
+    const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * 90; // ~565.487
+    let botInterval = null;
+    let botRunning = false;
+    let seqCounter = { team1: 0, team2: 0 };
+
+    // --- Audio Initializer ---
+    const audio = window.credillionAudio || new EcclesiasticalAudioSynthesizer();
+
+    function updateAudioButtonUI() {
+      const btn = document.getElementById('audio-toggle-btn');
+      const icon = document.getElementById('audio-icon');
+      const label = document.getElementById('audio-label');
+      const banner = document.getElementById('audio-banner');
+
+      if (audio.isMuted) {
+        icon.textContent = '🔇';
+        label.textContent = 'Unmute Audio';
+        btn.classList.remove('active');
+      } else if (audio.isUnlocked()) {
+        icon.textContent = '🔊';
+        label.textContent = 'Audio Active';
+        btn.classList.add('active');
+        if (banner) banner.style.display = 'none';
+      } else {
+        icon.textContent = '🔈';
+        label.textContent = 'Click to Unlock';
+        btn.classList.remove('active');
+      }
+    }
+
+    document.getElementById('audio-toggle-btn').addEventListener('click', async () => {
+      if (!audio.isUnlocked()) {
+        await audio.unlockAudio();
+      } else {
+        audio.toggleMute();
+      }
+      updateAudioButtonUI();
+    });
+
+    const bannerElem = document.getElementById('audio-banner');
+    if (bannerElem) {
+      bannerElem.addEventListener('click', async () => {
+        await audio.unlockAudio();
+        updateAudioButtonUI();
+      });
+    }
+
+    // --- Dual-Transport Host Networking (Local WebSocket + Cloud Relay) ---
+    function initHostConnection() {
+      const hostname = window.location.hostname;
+      const isStaticHost = hostname.includes('netlify.app') || 
+                           hostname.includes('github.io') ||
+                           urlParams.has('cloud') ||
+                           urlParams.has('room') ||
+                           window.location.protocol === 'file:';
+
+      if (isStaticHost) {
+        startCloudHost();
+      } else {
+        connectWebSocket();
+      }
+    }
+
+    function startCloudHost() {
+      if (isCloudMode) return;
+      isCloudMode = true;
+      console.log(`[Host] Activating Cloud Room Mode (Room ID: ${roomId})`);
+
+      // Initialize authoritative browser game engine
+      clientEngine = new ClientGameEngine(window.KRILLION_QUESTIONS, (msg) => {
+        handleServerMessage(msg);
+        if (cloudRelay) cloudRelay.publish(msg);
+      });
+
+      // Initialize Cloud MQTT Relay
+      cloudRelay = new CloudRelay({
+        roomId: roomId,
+        role: 'host',
+        onMessage: (msg) => {
+          handleInboundCloudMessage(msg);
+        },
+        onStatus: (status) => {
+          console.log(`[Host] Cloud Relay connection status: ${status}`);
+        }
+      });
+      cloudRelay.connect();
+
+      renderPhase('lobby');
+      setupCloudUrlsAndQRs();
+    }
+
+    function handleInboundCloudMessage(msg) {
+      if (!msg || !clientEngine) return;
+      if (msg.type === 'REGISTER') {
+        const teamRole = msg.role;
+        updateConnPill(teamRole === 'team1' ? 'status-team1' : 'status-team2', true);
+        if (cloudRelay) {
+          cloudRelay.publish({
+            type: 'REGISTER_ACK',
+            role: teamRole,
+            phase: clientEngine.phase,
+            round: clientEngine.round,
+            scores: clientEngine.scores
+          });
+        }
+        clientEngine.broadcastStateSync();
+      } else if (msg.type === 'LIVE_TYPING' || msg.type === 'INPUT_UPDATE') {
+        clientEngine.setLiveTyping(msg.team, msg.text);
+      } else if (msg.type === 'SUBMIT_WORD') {
+        clientEngine.submitWord(msg.team, msg.word);
+      } else if (msg.type === 'BUZZ') {
+        audio.handleAudioEvent({ effect: 'chime_altar_server' });
+      }
+    }
+
+    function setupCloudUrlsAndQRs() {
+      const pathname = window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/$/, '');
+      const basePath = pathname || '';
+      const t1Url = `${window.location.origin}${basePath}/team.html?room=${roomId}&team=1`;
+      const t2Url = `${window.location.origin}${basePath}/team.html?room=${roomId}&team=2`;
+
+      const code1 = document.getElementById('qr-team1-url');
+      const code2 = document.getElementById('qr-team2-url');
+      if (code1) code1.textContent = t1Url;
+      if (code2) code2.textContent = t2Url;
+
+      const img1 = document.getElementById('qr-team1-img');
+      const img2 = document.getElementById('qr-team2-img');
+      if (img1) img1.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(t1Url)}`;
+      if (img2) img2.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(t2Url)}`;
+
+      const banner = document.getElementById('lobby-public-banner');
+      if (banner) {
+        banner.style.display = 'block';
+        banner.innerHTML = `<span style="font-size: 1rem; font-weight: bold; color: #C59B27;">🌐 Global Cloud Room Active: <code>${roomId}</code> — Controllers connect directly from any phone</span>`;
+      }
+    }
+
+    // --- WebSocket Connection ---
+    function connectWebSocket() {
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${location.host}`;
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('[Host] Connected to Credillion server');
+        ws.send(JSON.stringify({ type: 'REGISTER', role: 'host' }));
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          handleServerMessage(msg);
+        } catch (err) {
+          console.error('[Host] WS message parsing error:', err);
+        }
+      };
+
+      ws.onclose = () => {
+        console.warn('[Host] WS connection closed, falling back to Cloud Host...');
+        if (!isCloudMode) {
+          startCloudHost();
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.warn('[Host] WS error, falling back to Cloud Host...', err);
+        if (!isCloudMode) {
+          startCloudHost();
+        }
+      };
+    }
+
+    function handleServerMessage(msg) {
+      switch (msg.type) {
+        case 'REGISTER_ACK':
+          clientId = msg.clientId;
+          if (msg.phase) gameState.phase = msg.phase;
+          if (msg.scores) gameState.scores = msg.scores;
+          renderPhase(gameState.phase);
+          break;
+
+        case 'STATE_SYNC':
+          Object.assign(gameState, msg);
+          renderState();
+          if (typeof msg.categoryRemainingSeconds === 'number') {
+            updateCategoryCountdown(msg.categoryRemainingSeconds);
+          }
+          break;
+
+        case 'TIMER_SYNC':
+          timerState.remainingMs = msg.remainingMs;
+          timerState.totalMs = msg.totalMs;
+          timerState.serverTime = msg.serverTime || Date.now();
+          timerState.clientAnchorTime = performance.now();
+          timerState.active = (msg.phase === 'round1' || msg.phase === 'halftime' || msg.phase === 'round2') && !gameState.paused;
+          if (typeof msg.categoryRemainingSeconds === 'number') {
+            updateCategoryCountdown(msg.categoryRemainingSeconds);
+          }
+          if (typeof msg.paused === 'boolean' && msg.paused !== gameState.paused) {
+            gameState.paused = msg.paused;
+            renderHostControls();
+          }
+          break;
+
+        case 'CATEGORY_ROTATED':
+          if (msg.prompt) {
+            gameState.prompt = msg.prompt;
+            renderPrompt();
+            flashCategoryBanner();
+            if (typeof msg.categoryRemainingSeconds === 'number') {
+              updateCategoryCountdown(msg.categoryRemainingSeconds);
+            }
+          }
+          break;
+
+        case 'LIVE_TYPING_RELAY':
+          handleLiveTypingRelay(msg);
+          break;
+
+        case 'WORD_EVALUATED':
+          handleWordEvaluated(msg);
+          break;
+
+        case 'AUDIO_EVENT':
+          audio.handleAudioEvent(msg);
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    // --- Live Typing Relay (<100ms) ---
+    function handleLiveTypingRelay(msg) {
+      const team = msg.team; // 'team1' | 'team2'
+      const text = msg.text || '';
+      gameState.liveTyping[team] = text;
+
+      const textElem = document.getElementById(`typing-text-${team}`);
+      const cardElem = document.getElementById(`live-typing-${team}`);
+      const statusElem = document.getElementById(`status-typing-${team}`);
+
+      if (textElem) {
+        textElem.textContent = text;
+      }
+
+      if (cardElem) {
+        if (text.length > 0) {
+          cardElem.classList.add('typing');
+          if (statusElem) statusElem.textContent = 'Typing...';
+        } else {
+          cardElem.classList.remove('typing');
+          if (statusElem) statusElem.textContent = 'Idle';
+        }
+      }
+    }
+
+    // --- Word Evaluation Feedback ---
+    function handleWordEvaluated(msg) {
+      const { team, word, result } = msg;
+      const boxElem = document.getElementById(`box-typing-${team}`);
+
+      if (result.accepted) {
+        if (boxElem) {
+          boxElem.classList.add('flash-success');
+          setTimeout(() => boxElem.classList.remove('flash-success'), 600);
+        }
+      } else {
+        if (boxElem) {
+          boxElem.classList.add('shake-error');
+          setTimeout(() => boxElem.classList.remove('shake-error'), 400);
+        }
+      }
+
+      // Add to words list
+      renderScoredWords();
+    }
+
+    // --- State Rendering ---
+    function renderState() {
+      renderPhase(gameState.phase);
+      renderPrompt();
+      renderMeters();
+      renderScoredWords();
+      renderMultiplier();
+      renderHostControls();
+
+      if (gameState.phase === 'halftime') {
+        renderHalftime();
+      } else if (gameState.phase === 'gameover') {
+        renderVictory();
+      }
+    }
+
+    function updateCategoryCountdown(sec) {
+      const catTimerEl = document.getElementById('host-cat-timer');
+      const catSecEl = document.getElementById('categoryTimerSec');
+      const catFillEl = document.getElementById('host-cat-fill');
+      if (catTimerEl) catTimerEl.textContent = `${sec}s`;
+      if (catSecEl) catSecEl.textContent = `${sec}s`;
+      if (catFillEl) {
+        const pct = Math.max(0, Math.min(100, (sec / 60) * 100));
+        catFillEl.style.width = `${pct}%`;
+      }
+    }
+
+    function flashCategoryBanner() {
+      const banner = document.getElementById('prompt-banner-main');
+      if (banner) {
+        banner.classList.remove('category-flash-active');
+        void banner.offsetWidth;
+        banner.classList.add('category-flash-active');
+      }
+    }
+
+    function renderHostControls() {
+      const btnStart = document.getElementById('btn-host-start');
+      const btnPause = document.getElementById('btn-host-pause');
+      const pauseIcon = document.getElementById('btn-host-pause-icon');
+      const pauseLabel = document.getElementById('btn-host-pause-label');
+      const pauseBanner = document.getElementById('host-paused-banner');
+      const tracker = document.getElementById('host-category-tracker');
+
+      const isLobby = gameState.phase === 'lobby';
+      const isActiveRound = gameState.phase === 'round1' || gameState.phase === 'round2';
+
+      if (btnStart) {
+        btnStart.disabled = !isLobby;
+        btnStart.classList.toggle('pulse-ready', isLobby);
+      }
+
+      if (btnPause) {
+        btnPause.disabled = !isActiveRound;
+        if (gameState.paused) {
+          btnPause.classList.add('is-paused');
+          if (pauseIcon) pauseIcon.textContent = '▶';
+          if (pauseLabel) pauseLabel.textContent = 'Resume';
+        } else {
+          btnPause.classList.remove('is-paused');
+          if (pauseIcon) pauseIcon.textContent = '⏸';
+          if (pauseLabel) pauseLabel.textContent = 'Pause';
+        }
+      }
+
+      if (pauseBanner) {
+        pauseBanner.style.display = gameState.paused ? 'block' : 'none';
+      }
+
+      if (tracker) {
+        tracker.style.display = isActiveRound ? 'flex' : 'none';
+      }
+    }
+
+    function renderPhase(phase) {
+      const phaseBadge = document.getElementById('phase-badge');
+      if (phaseBadge) {
+        phaseBadge.className = `phase-badge phase-${phase}`;
+        const labels = {
+          lobby: 'Lobby',
+          round1: 'Round 1 (Foundation)',
+          halftime: 'Halftime Contemplation',
+          round2: 'Round 2: Duc In Altum',
+          gameover: 'Sacred Victor Crowned'
+        };
+        phaseBadge.textContent = labels[phase] || phase;
+      }
+
+      // View Panels
+      const views = {
+        lobby: 'view-lobby',
+        round1: 'view-game',
+        round2: 'view-game',
+        halftime: 'view-halftime',
+        gameover: 'view-victory'
+      };
+
+      const targetViewId = views[phase] || 'view-lobby';
+      document.querySelectorAll('.view-panel').forEach(panel => {
+        if (panel.id === targetViewId) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+    }
+
+    function renderMultiplier() {
+      const multBadge = document.getElementById('multiplier-badge');
+      if (multBadge) {
+        if (gameState.multiplier > 1.0 || gameState.phase === 'round2') {
+          multBadge.style.display = 'inline-flex';
+        } else {
+          multBadge.style.display = 'none';
+        }
+      }
+    }
+
+    function renderPrompt() {
+      if (!gameState.prompt) return;
+      const titleElem = document.getElementById('category-title');
+      const promptElem = document.getElementById('category-prompt');
+      const descElem = document.getElementById('category-description');
+
+      if (titleElem) titleElem.textContent = gameState.prompt.title || '';
+      if (promptElem) promptElem.textContent = gameState.prompt.prompt || '';
+      if (descElem) descElem.textContent = gameState.prompt.description || '';
+    }
+
+    function renderMeters() {
+      const maxMeters = Math.max(10000, gameState.scores.team1.depthMeters, gameState.scores.team2.depthMeters, 1);
+
+      ['team1', 'team2'].forEach(t => {
+        const score = gameState.scores[t] || { points: 0, depthMeters: 0 };
+        const ptsElem = document.getElementById(`points-${t}`);
+        const depthElem = document.getElementById(`depth-${t}`);
+        const fillElem = document.getElementById(`gauge-fill-${t}`);
+
+        if (ptsElem) ptsElem.textContent = `${score.points} pts`;
+        if (depthElem) depthElem.textContent = `${score.depthMeters.toLocaleString()}m`;
+
+        if (fillElem) {
+          const pct = Math.min(100, Math.round((score.depthMeters / maxMeters) * 100));
+          fillElem.style.height = `${pct}%`;
+        }
+      });
+    }
+
+    function renderScoredWords() {
+      ['team1', 'team2'].forEach(t => {
+        const listElem = document.getElementById(`words-list-${t}`);
+        const countElem = document.getElementById(`count-words-${t}`);
+        const words = (gameState.scores[t] && gameState.scores[t].wordsScored) || [];
+
+        if (countElem) countElem.textContent = words.length;
+
+        if (listElem) {
+          if (words.length === 0) {
+            listElem.innerHTML = '<span class="typing-placeholder">No discoveries yet...</span>';
+          } else {
+            // Show recent words in reverse chronological order
+            const recent = words.slice().reverse();
+            listElem.innerHTML = recent.map(item => {
+              const tierName = (item.tier || 'pew_warmer').replace(/_/g, ' ');
+              return `<span class="tier-badge badge-${item.tier}">
+                <strong>${escapeHtml(item.word)}</strong>
+                <span style="opacity: 0.8; font-size: 0.7rem;">+${item.points}p (${item.depthMeters}m)</span>
+              </span>`;
+            }).join(' ');
+          }
+        }
+      });
+    }
+
+    function renderHalftime() {
+      const t1 = gameState.scores.team1;
+      const t2 = gameState.scores.team2;
+
+      const s1 = document.getElementById('halftime-score-team1');
+      const s2 = document.getElementById('halftime-score-team2');
+      const d1 = document.getElementById('halftime-depth-team1');
+      const d2 = document.getElementById('halftime-depth-team2');
+
+      if (s1) s1.textContent = `${t1.points} pts`;
+      if (s2) s2.textContent = `${t2.points} pts`;
+      if (d1) d1.textContent = `Depth: ${t1.depthMeters.toLocaleString()}m`;
+      if (d2) d2.textContent = `Depth: ${t2.depthMeters.toLocaleString()}m`;
+
+      // Top words in halftime
+      renderTopWords('halftime-words-team1', t1.wordsScored);
+      renderTopWords('halftime-words-team2', t2.wordsScored);
+    }
+
+    function renderTopWords(elemId, words = []) {
+      const elem = document.getElementById(elemId);
+      if (!elem) return;
+      if (!words || words.length === 0) {
+        elem.innerHTML = '<span class="text-muted" style="font-size: 0.8rem;">None recorded</span>';
+        return;
+      }
+      const sorted = words.slice().sort((a, b) => b.points - a.points).slice(0, 4);
+      elem.innerHTML = sorted.map(item => `
+        <span class="tier-badge badge-${item.tier}">
+          ${escapeHtml(item.word)} (+${item.points})
+        </span>
+      `).join(' ');
+    }
+
+    function renderVictory() {
+      const t1 = gameState.scores.team1;
+      const t2 = gameState.scores.team2;
+
+      let winner = 'team1';
+      let runnerUp = 'team2';
+      let tie = false;
+
+      if (t1.points > t2.points) {
+        winner = 'team1';
+        runnerUp = 'team2';
+      } else if (t2.points > t1.points) {
+        winner = 'team2';
+        runnerUp = 'team1';
+      } else {
+        tie = true;
+      }
+
+      const teamNames = { team1: "Team A (St. Peter)", team2: "Team B (St. Paul)" };
+
+      const winName = document.getElementById('podium-winner-name');
+      const winScore = document.getElementById('podium-winner-score');
+      const winDepth = document.getElementById('podium-winner-depth');
+
+      const runName = document.getElementById('podium-runnerup-name');
+      const runScore = document.getElementById('podium-runnerup-score');
+      const runDepth = document.getElementById('podium-runnerup-depth');
+
+      if (tie) {
+        if (winName) winName.textContent = "Sacred Deadlock (Tie)";
+        if (winScore) winScore.textContent = `${t1.points} pts`;
+        if (winDepth) winDepth.textContent = `${t1.depthMeters}m`;
+        if (runName) runName.textContent = "Co-Champions";
+        if (runScore) runScore.textContent = `${t2.points} pts`;
+        if (runDepth) runDepth.textContent = `${t2.depthMeters}m`;
+      } else {
+        const winTeam = gameState.scores[winner];
+        const runTeam = gameState.scores[runnerUp];
+
+        if (winName) winName.textContent = teamNames[winner];
+        if (winScore) winScore.textContent = `${winTeam.points} pts`;
+        if (winDepth) winDepth.textContent = `${winTeam.depthMeters.toLocaleString()}m descended`;
+
+        if (runName) runName.textContent = teamNames[runnerUp];
+        if (runScore) runScore.textContent = `${runTeam.points} pts`;
+        if (runDepth) runDepth.textContent = `${runTeam.depthMeters.toLocaleString()}m descended`;
+      }
+
+      // Stats Table
+      document.getElementById('stat-points-t1').textContent = `${t1.points} pts`;
+      document.getElementById('stat-points-t2').textContent = `${t2.points} pts`;
+      document.getElementById('stat-depth-t1').textContent = `${t1.depthMeters.toLocaleString()}m`;
+      document.getElementById('stat-depth-t2').textContent = `${t2.depthMeters.toLocaleString()}m`;
+      document.getElementById('stat-count-t1').textContent = `${t1.wordsScored.length} words`;
+      document.getElementById('stat-count-t2').textContent = `${t2.wordsScored.length} words`;
+
+      const rarestT1 = getRarestWord(t1.wordsScored);
+      const rarestT2 = getRarestWord(t2.wordsScored);
+      document.getElementById('stat-rarest-t1').textContent = rarestT1;
+      document.getElementById('stat-rarest-t2').textContent = rarestT2;
+    }
+
+    function getRarestWord(words = []) {
+      if (!words || words.length === 0) return 'None';
+      const order = ['one_in_a_credillion', 'doctor_of_the_church', 'theologian', 'altar_server', 'pew_warmer'];
+      for (const t of order) {
+        const found = words.find(w => w.tier === t);
+        if (found) {
+          const tLabel = t.replace(/_/g, ' ');
+          return `${found.word} (${tLabel})`;
+        }
+      }
+      return words[0].word;
+    }
+
+    // --- 60 FPS Smooth Timer Animation Loop ---
+    function animateTimer(now) {
+      if (timerState.active && !gameState.paused) {
+        const elapsed = now - timerState.clientAnchorTime;
+        const currentRemaining = Math.max(0, timerState.remainingMs - elapsed);
+
+        renderTimerDisplay(currentRemaining, timerState.totalMs);
+
+        // Halftime countdown display
+        if (gameState.phase === 'halftime') {
+          const htDisplay = document.getElementById('halftime-timer-display');
+          if (htDisplay) {
+            const sec = Math.ceil(currentRemaining / 1000);
+            htDisplay.textContent = `00:${sec < 10 ? '0' : ''}${sec}`;
+          }
+        }
+      }
+      requestAnimationFrame(animateTimer);
+    }
+    requestAnimationFrame(animateTimer);
+
+    function renderTimerDisplay(remainingMs, totalMs) {
+      const totalSec = Math.ceil(remainingMs / 1000);
+      const minutes = Math.floor(totalSec / 60);
+      const seconds = totalSec % 60;
+      const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      const textElem = document.getElementById('timer-display');
+      const progressElem = document.getElementById('timer-svg-progress');
+      const roundLabel = document.getElementById('timer-round-label');
+
+      if (textElem) {
+        textElem.textContent = formatted;
+        if (totalSec <= 15 && totalSec > 0 && (gameState.phase === 'round1' || gameState.phase === 'round2')) {
+          textElem.classList.add('urgent');
+        } else {
+          textElem.classList.remove('urgent');
+        }
+      }
+
+      if (progressElem && totalMs > 0) {
+        const fraction = Math.max(0, Math.min(1, remainingMs / totalMs));
+        const offset = CIRCLE_CIRCUMFERENCE * (1 - fraction);
+        progressElem.style.strokeDashoffset = offset;
+
+        if (totalSec <= 15 && totalSec > 0 && (gameState.phase === 'round1' || gameState.phase === 'round2')) {
+          progressElem.classList.add('urgent');
+        } else {
+          progressElem.classList.remove('urgent');
+        }
+      }
+
+      if (roundLabel) {
+        if (gameState.phase === 'round1') {
+          roundLabel.textContent = 'Round 1';
+          roundLabel.style.color = '';
+        } else if (gameState.phase === 'round2') {
+          roundLabel.textContent = 'Duc In Altum';
+          roundLabel.style.color = '#FDE047';
+        } else if (gameState.phase === 'halftime') {
+          roundLabel.textContent = 'Halftime';
+          roundLabel.style.color = '';
+        } else if (gameState.phase === 'gameover') {
+          roundLabel.textContent = 'Game Over';
+          roundLabel.style.color = '';
+        } else {
+          roundLabel.textContent = 'Ready';
+          roundLabel.style.color = '';
+        }
+      }
+    }
+
+    // --- Host Actions & Controls ---
+    function sendHostAction(action, payload = {}) {
+      if (isCloudMode && clientEngine) {
+        if (action === 'START_MATCH') action = 'START';
+        clientEngine.handleAction(action, payload);
+        return;
+      }
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(Object.assign({ type: 'HOST_CONTROL', action }, payload)));
+      }
+    }
+
+    function setTestRemainingSeconds(sec) {
+      sendHostAction('SET_TIME', { remainingMs: sec * 1000 });
+    }
+
+    function changeCategory(catId) {
+      sendHostAction('SET_CATEGORY', { categoryId: catId });
+    }
+
+    document.getElementById('btn-start-match').addEventListener('click', () => {
+      sendHostAction('START_MATCH');
+      try {
+        audio.unlockAudio().then(updateAudioButtonUI).catch(() => {});
+      } catch (e) {}
+    });
+
+    const btnHostStart = document.getElementById('btn-host-start');
+    if (btnHostStart) {
+      btnHostStart.addEventListener('click', () => {
+        sendHostAction('START_MATCH');
+        try {
+          audio.unlockAudio().then(updateAudioButtonUI).catch(() => {});
+        } catch (e) {}
+      });
+    }
+
+    const btnHostPause = document.getElementById('btn-host-pause');
+    if (btnHostPause) {
+      btnHostPause.addEventListener('click', () => {
+        sendHostAction(gameState.paused ? 'RESUME' : 'PAUSE');
+      });
+    }
+
+    const btnHostReset = document.getElementById('btn-host-reset');
+    if (btnHostReset) {
+      btnHostReset.addEventListener('click', () => {
+        sendHostAction('RESET');
+      });
+    }
+
+    document.getElementById('btn-skip-halftime').addEventListener('click', () => {
+      sendHostAction('SKIP_HALFTIME');
+    });
+
+    document.getElementById('btn-victory-new-match').addEventListener('click', () => {
+      sendHostAction('RESET');
+    });
+
+    // --- Info & QR URLs loader ---
+    async function loadApiInfo() {
+      if (isCloudMode) return; // Do not overwrite cloud QR links
+      try {
+        const res = await fetch('/api/info');
+        if (res.ok) {
+          const info = await res.json();
+          localIp = info.ip || 'localhost';
+
+          const t1Url = info.team1Url || `http://${localIp}:${info.port}/team1`;
+          const t2Url = info.team2Url || `http://${localIp}:${info.port}/team2`;
+
+          const code1 = document.getElementById('qr-team1-url');
+          const code2 = document.getElementById('qr-team2-url');
+          if (code1) code1.textContent = t1Url;
+          if (code2) code2.textContent = t2Url;
+
+          // Update public web banner if tunnel active
+          if (info.publicUrl) {
+            const banner = document.getElementById('lobby-public-banner');
+            const link = document.getElementById('lobby-public-link');
+            if (banner && link) {
+              banner.style.display = 'block';
+              link.href = info.publicUrl;
+              link.textContent = info.publicUrl;
+            }
+          }
+
+          // Update connection pills
+          if (info.connected) {
+            updateConnPill('status-team1', info.connected.team1 > 0);
+            updateConnPill('status-team2', info.connected.team2 > 0);
+          }
+        }
+      } catch (err) {
+        console.warn('[Host] /api/info fetch failed:', err);
+      }
+    }
+
+    function updateConnPill(elemId, isConnected) {
+      const elem = document.getElementById(elemId);
+      if (elem) {
+        if (isConnected) {
+          elem.textContent = '✓ Controller Connected';
+          elem.classList.add('connected');
+        } else {
+          elem.textContent = 'Waiting for Controller...';
+          elem.classList.remove('connected');
+        }
+      }
+    }
+
+    window.copyUrl = function(elemId) {
+      const code = document.getElementById(elemId);
+      if (code && navigator.clipboard) {
+        navigator.clipboard.writeText(code.textContent);
+        const original = code.textContent;
+        code.textContent = 'Copied to Clipboard!';
+        setTimeout(() => { code.textContent = original; }, 1500);
+      }
+    };
+
+    // Fullscreen Toggle
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize
+    initHostConnection();
+    if (!isCloudMode) {
+      loadApiInfo();
+      setInterval(loadApiInfo, 3000);
+    }
+  </script>
+</body>
+</html>
